@@ -1,0 +1,95 @@
+<!-- Button trigger modal -->
+  
+  <!-- Modal for Add New District -->
+  <div class="modal fade" id="newdistrict" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Add New District</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+              <div id="alert_danger">
+                
+              </div>
+            <div class="row align-items-start">
+                <div class="form-group col">
+                    <label>State</label>
+                    <input type="text" id="state_new" value="" class="form-control" readonly>
+                </div>
+                <div class="form-group col" >
+                    <label>District Name</label>
+                    <input  type="text" id="new_district_name" name="new_district_name" class="form-control" required>
+                </div>
+
+                
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="btn_add_new_district">Add New District</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+  <!-- Modal for Add New Court -->
+  <div class="modal fade" id="newcourt" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Add New Court</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+              <div id="alert_danger">
+                
+              </div>
+              <div class="row align-items-start">
+                <div class="form-group col">
+                    <label>State</label>
+                    <input type="text" id="state_new1" value="" class="form-control" readonly>
+                </div>
+                <div class="form-group col">
+                  <label>District</label>
+                  <input type="text" id="district_new1" value="" class="form-control" readonly>
+                </div>
+
+                <div class="form-group col" >
+                    <label>Court Type</label>
+                    <select class="form-control" name="court_type" id="court_type">
+                      {% for type in court_type %}
+                      <option value="{{type.id}}">{{type.court_type}}</option>
+                      {% endfor %}
+                      
+                    </select>
+                </div>
+
+                
+              </div>
+
+              <div class="row align-items-start">
+                <div class="form-group col">
+                    <label>Court Full Name</label>
+                    <input type="text" id="court_name" value="" class="form-control">
+                </div>
+                <div class="form-group col">
+                  <label>Court No / Short Name</label>
+                  <input type="text" id="court_no" value="" class="form-control">
+                </div>
+              </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="btn_add_new_court">Add New Court</button>
+        </div>
+      </div>
+    </div>
+  </div>
+

@@ -1,0 +1,7 @@
+<option value="0" selected>Select Court</option>
+    {% for court in courts %}
+    <option value="{{court.id}}">{{court.court_no}} ( {{court.court_name}} ) </option>
+    {% endfor %}
+    
+    <option value="Add_new_Court">Add new</option>
+

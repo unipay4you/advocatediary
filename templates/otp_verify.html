@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<div class="main-wrapper login-body">
+    <div class="login-wrapper">
+        <div class="container">
+            <div class="loginbox">
+                <div class="login-left">
+                    <img class="img-fluid" src="{% static 'assets/img/logo-white.png' %}" alt="Logo">
+                </div>
+            <div class="login-right">
+                <div class="login-right-wrap">
+                    
+                    <p class="account-subtitle">Access to our dashboard</p>
+                    {% if messages %}
+                    {{ message.tags }}
+                    <br>
+                    <br>
+                    <div class="alert alert-primary" role="alert">
+                        {% for message in messages %}
+                        {{forloop.counter}}-{{ message }}
+                        <br>
+                        {% endfor %}
+                    </div>
+
+                    {% endif %}
+
+                    {% if not is_email_verified %}
+                        <h1>Email Not Verified</h1>
+                        <div class="form-group">
+                            <h6>Email Verification link has been send</h6>
+                            <h6>{{email}}</h6>
+                            <span>Link not received click <a href="{% url 'resend_email_link' %}">resend</a></span>
+                            
+                        </div>
+                        {% endif %}
+                        {% if not is_phone_number_verified %}    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="login-or">
+                            <span class="or-line"></span>
+                            
+                        </div>
+                        
+                        
+                        <h1>Mobile Not Verified</h1>
+                        <div class="form-group">
+                            <span>OTP has been send to Mobile {{phone_number}}</span>
+                            <input class="form-control" name="otp" type="text" placeholder="Enter OTP">
+                            <a href="{% url 'resend_otp' %}">Resend OTP</a>
+                        </div>
+                        <div class="form-group mb-0">
+                            <button class="btn btn-primary btn-block" type="submit">Verify OTP</button>
+                        </div>
+                        
+                    </form>
+                    {% endif %}
+                    <div class="login-or">
+                        <span class="or-line"></span>
+                        
+                    </div>
+    
+                    <div class="social-login">
+                        <span>Register with</span>
+                        <a href="#" class="facebook"><i class="fab fa-facebook-f"></i></a><a href="#" class="google"><i class="fab fa-google"></i></a>
+                    </div>
+                    <div class="text-center dont-have">Already have an account? <a href="{% url 'login' %}">Login</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+
+{% endblock %}
+</div>

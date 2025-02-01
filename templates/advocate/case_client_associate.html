@@ -1,0 +1,180 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+   
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+      <title>Advocate Diary-Dashboard</title>
+      {% include 'css_head.html' %}
+   </head>
+   <body>
+      
+      
+         {% include 'header.html' %}
+         {% include 'sidebar.html' %}
+         
+         <!-- Offcanvas right Penal-->
+         
+
+          
+         <div class="page-wrapper">
+            <div class="content container-fluid">
+               <div class="page-header">
+                  <div class="row">
+                     <div class="col-sm-12">
+                        <ul class="breadcrumb">
+                           <li class="breadcrumb-item active">Case Associate with Client</li>
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+                  
+                  
+               
+               <div class="row">
+                  <div class="col-md-12 d-flex">
+                     <div class="card flex-fill">
+                        
+                  
+                                
+                        <div class="card-body">
+                            <div class="row align-items-start">
+                                
+                                <div class="form-group col">
+                                    <label><h3>{{case.petitioner}} v/s {{case.respondent}}</h3></label>
+                                    
+                                </div>
+                                <div class="form-group col">
+                                    <label><h6>Select Client ({{case.client_type}})</h6></label>
+                                    <select class="form-control" name="client" id="client">
+                                        {% for client in clients %}
+                                        <option value="{{client.id}}">{{client.name}} - ( {{client.mobile}} )</option>
+                                        {% endfor %}
+                                    </select>
+                                    <br>
+                                    <button type="button" id="btn_add_more" class="btn btn-outline-primary">Add Client and add another</button>
+                                    <button type="button" id="btn_add_close" class="btn btn-outline-secondary">Add Client and Close</button>
+                                    <button type="button" id="btn_skip" class="btn btn-outline-danger">Skip</button>
+                                </div>
+                                
+                            </div>
+                            <div class="row align-items-start">
+                                            
+
+                                <div class="form-group col">
+                                    <label>Case Id</label>
+                                    <input type="text" class="form-control" id="case_id" value="{{case.id}}"  readonly>
+                                </div>
+
+                                <div class="form-group col">
+                                    <label>CNR </label>
+                                    <input type="text" class="form-control" value="{{case.crn}}" readonly>
+                                </div>
+                                <div class="form-group col">
+                                    <label>Case Number </label>
+                                    <input type="text" class="form-control" value="{{case.case_no}}/{{case.case_year}}" readonly>
+                                </div>
+
+                            </div>
+                            <div class="row align-items-start">
+                                            
+
+                                <div class="form-group col">
+                                    <label>Court</label>
+                                    <input type="text" class="form-control" value="{{case.court_no}} ( {{case.court_name}} )" readonly>
+                                </div>
+
+                                <div class="form-group col">
+                                    <label>Section</label>
+                                    <input type="text" class="form-control" value="{{case.under_section}}" readonly>
+                                </div>
+                                <div class="form-group col">
+                                    <label>Next Date </label>
+                                    <input type="text" class="form-control" value="{{case.next_date}}" readonly>
+                                </div>
+
+                            </div>
+
+                            <div class="row align-items-start">
+                                <div class="table-responsive">
+                                    <table class="table table-striped" id="myTable">
+                                        <h5>Associate Clients</h5>
+                                       <thead class="thead-light">
+                                          <tr>
+                                             <th>S.No</th>
+                                             <th class="text-center">Name</th>
+                                             <th class="text-center">Action</th>
+                                             
+      
+                                          </tr>
+                                       </thead>
+                                       <tbody>
+                                          {% for ct in associate_with_client %}
+                                          
+                                          <tr>
+                                             
+                                             <td>{{forloop.counter}}</td>
+                                             <td class="text-center">{{ct.client}}</td>
+                                             <td>
+                                                <button type="button" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                             </td>
+                                             
+                                          </tr>
+                                          {% endfor %}
+                                       </tbody>
+                                    </table>
+                                
+                            </div>
+
+                            
+                        </div>
+                     </div>
+                  </div>
+                  
+               </div>
+               
+            </div>
+            
+            {% include 'footer.html' %}
+         </div>
+      </div>
+      
+      <script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+      <script src="{% static 'assets/js/popper.min.js' %}"></script>
+      <script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+      <script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+      <script src="{% static 'assets/plugins/apexchart/apexcharts.min.js' %}"></script>
+      <script src="{% static 'assets/plugins/apexchart/chart-data.js' %}"></script>
+      <script src="{% static 'assets/js/script.js' %}"></script>
+
+      <script>
+        $(document).ready(function() {
+            document.getElementById("btn_add_more").addEventListener("click", function(){
+                var client_id = $('#client').val()
+                var case_id = $('#case_id').val()
+                var url = "/advocate/associate_client_and_add_more/?client_id="+client_id+'&case_id='+case_id;
+                $.get(url, function(data, status){
+                    alert(data)
+                    window.location.reload();
+                });
+            });
+
+            document.getElementById("btn_add_close").addEventListener("click", function(){
+                var client_id = $('#client').val()
+                var case_id = $('#case_id').val()
+                var url = "/advocate/associate_client_and_add_more/?client_id="+client_id+'&case_id='+case_id;
+                $.get(url, function(data, status){
+                    window.location.replace('adv-index')
+                });
+            });
+
+            document.getElementById("btn_skip").addEventListener("click", function(){
+                window.location.replace('adv-index')
+            });
+        });
+      </script>
+      
+   </body>
+   
+</html>

@@ -1,0 +1,212 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+   
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+      <title>Advocate Diary-Dashboard</title>
+      {% include 'css_head.html' %}
+   </head>
+   <body>
+      
+      
+         {% include 'header.html' %}
+         {% include 'sidebar.html' %}
+         
+         <!-- Modal for Add New Client -->
+<div class="modal fade" id="newclient" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+   <div class="modal-dialog">
+     
+       
+      <div class="modal-content">
+         
+         <div class="modal-header">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">Add New Client</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <div class="modal-body">
+            <div id="alert_danger">
+            </div>
+            <form method="post"> 
+               {% csrf_token %}
+            <div class="form-group">
+               <input class="form-control" required name="client_Name" type="text" value="{{client_Name}}" placeholder="Client Name">
+            </div>
+            <div class="form-group">
+               <input class="form-control" name="mobile" maxlength="10" type="text" value="{{mobile}}" placeholder="Mobile Number">
+            </div>
+            <div class="form-group">
+               <input class="form-control" name="address" type="text" value="{{address}}" placeholder="Address">
+            </div>
+            <div class="form-group mb-0">
+               <button class="btn btn-primary btn-block" type="submit">Register</button>
+           </div>
+            </form>
+              
+         </div>
+         <div class="modal-footer">
+            
+         </div>
+      
+      </div>
+     
+   </div>
+ </div>  
+ 
+         
+         <div class="page-wrapper">
+            <div class="content container-fluid">
+               <div class="content container-fluid">
+                  <div class="page-header">
+                     <div class="row">
+                        <div class="col">
+                           <h3 class="page-title">All Clients</h3>
+                           <ul class="breadcrumb">
+                              <li class="breadcrumb-item"><a href="{% url 'adv_index' %}">Dashboard</a></li>
+                              <li class="breadcrumb-item active">Clients</li>
+                           </ul>
+                        </div>
+                     </div>
+                  </div>
+                  {% if messages %}
+                                        {{ message.tags }}
+                                        {% for message in messages %}
+                                            <div class="alert alert-danger" role="alert">
+                                            {{ message }}
+                                            </div>
+                                        {% endfor %}
+                                        
+
+                                        {% endif %}
+                     
+                  <div class="nav justify-content-end">
+                                        
+                     <li class="nav-item">
+                        <button type="button" id="btn_newClient" class="btn btn-outline-primary">New Client</button>
+                      </li>
+
+                      <li class="nav-item">
+                        <button type="button" class="btn btn-outline-danger">Associate with Case</button>
+                      </li>
+                      <form>
+                      <li class="nav-item">
+                        <div class="top-nav-search">
+                           <input type="text" class="form-control" name="search" placeholder="Search here">
+                           
+                           
+                        </div>
+                        <button class="btn" type="submit"><i class="fa fa-search"></i></button>
+                      </li>
+                     </form>
+                     
+                     
+                     
+                   </div>
+               
+               <div class="row">
+                  <div class="col-md-12 d-flex">
+                     <div class="card flex-fill">
+                        <div class="card-body">
+                           <div class="table-responsive">
+                              <table class="table table-striped" id="myTable">
+                                 <thead class="thead-light">
+                                    <tr>
+                                       <th>S.No</th>
+                                       <th class="text-center">Name</th>
+                                       <th class="text-center">Mobile No</th>
+                                       <th class="text-center">Address</th>
+                                       <th class="text-center">No of Cases</th>
+                                       <th class="text-center">Action</th>
+                                       
+
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                    {% for client in allclients %}
+                                       
+                                    
+                                    <tr>
+                                       
+                                       <td>{{forloop.counter0|add:allclients.start_index}}</td>
+
+                                       <td class="text-center">{{client.name}}</td>
+                                       <td class="text-center">{{client.mobile}}</td>
+                                       <td class="text-center">{{client.address}}</td>
+                                       <td class="text-center">{{client.count}}</td>   
+                                       <td>
+                                          <button type="button" class="btn btn-outline-secondary">Edit</button>
+                                          <button type="button" class="btn btn-outline-primary">View Cases</button>
+                                          <button type="button" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                       </td>
+                                       
+                                    </tr>
+                                    {% endfor %}
+                                 </tbody>
+                              </table>
+                              <nav aria-label="...">
+                                 <ul class="pagination">
+                                   {% if allclients.has_previous %}
+                                   <li class="page-item">
+                                    <a class="page-link" href="allclients?page=1">First</a>
+                                  </li>
+                                  <li class="page-item">
+                                    <a class="page-link" href="?page={{allclients.previous_page_number}}">Previous</a>
+                                  </li>
+                                  {% endif %}
+
+                                  {% for n in page_range %}
+                                    {% if current_page_number == n %}
+                                    <li class="page-item active" aria-current="page">
+                                       <a class="page-link" href="?page={{n}}">{{n}}</a>
+                                    </li>
+                                    {% elif n == '…'%}
+                                    <li class="page-item">{{n}}</li>
+                                    {% else %}
+                                    <li class="page-item"><a class="page-link" href="?page={{n}}">{{n}}</a></li>
+                                    {% endif %}
+                                  
+                                  {% endfor %}
+                                 {% if allclients.has_next %}
+                                   <li class="page-item">
+                                     <a class="page-link" href="?page={{allclients.next_page_number}}">Next</a>
+                                   </li>
+                                   <li class="page-item">
+                                    <a class="page-link" href="?page={{lastpage}}">Last</a>
+                                  </li>
+                                  
+                                   {% endif %}
+                                 </ul>
+                               </nav>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  
+               </div>
+    
+               </div>
+            
+            {% include 'footer.html' %}
+            </div>
+      </div>
+      
+      <script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+      <script src="{% static 'assets/js/popper.min.js' %}"></script>
+      <script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+      <script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+      <script src="{% static 'assets/plugins/apexchart/apexcharts.min.js' %}"></script>
+      <script src="{% static 'assets/plugins/apexchart/chart-data.js' %}"></script>
+      <script src="{% static 'assets/js/script.js' %}"></script>
+      
+   </body>
+   <script>
+   $(document).ready(function() {
+      document.getElementById("btn_newClient").addEventListener("click", function(){
+         document.getElementById("alert_danger").style.display = 'none'
+         $('#newclient').modal("show");
+             
+      });
+  });
+</script>   
+</html>

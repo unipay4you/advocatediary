@@ -140,23 +140,53 @@ class Court(models.Model):
     def __str__(self):
         return self.court_no
 
-#class Case_Master(BaseModel):
-    #crn = models.CharField(max_length=50, blank=True, null=True)
-    #case_no = models.CharField(max_length=50, blank=True, null=True)
-    #case_year = models.CharField(max_length=50, blank=True, null=True)    
-    #state = models.OneToOneField(State,on_delete=models.DO_NOTHING, blank=True, null=True)
-    #district = models.OneToOneField(District,on_delete=models.DO_NOTHING, blank=True, null=True)
-    #court_no = models.OneToOneField(Court,on_delete=models.DO_NOTHING, blank=True, null=True)
-    #case_type = models.OneToOneField(Case_Type,on_delete=models.DO_NOTHING, blank=True, null=True)
-    #under_section = models.CharField(max_length=50, blank=True, null=True)
-    #petitioner = models.CharField(max_length=50, blank=True, null=True)
-    #respondent = models.CharField(max_length=50, blank=True, null=True)
-    #our_client = models.CharField(max_length=50, blank=True, null=True)
-    #stage_of_case = models.OneToOneField(Case_Stage,on_delete=models.DO_NOTHING, blank=True, null=True)
-    #fir_number = models.CharField(max_length=50, blank=True, null=True)
-    #fir_year = models.DateField(blank=True, null=True)
-    #police_station = models.CharField(max_length=50, blank=True, null=True)
-    #first_date = models.DateField(blank=True, null=True)
-    #last_date = models.DateField(blank=True, null=True)
-    #next_date = models.DateField(blank=True, null=True)
-    #sub_advocate = models.CharField(max_length=50, blank=True, null=True)
+
+class Case_Master(BaseModel):
+    crn = models.CharField(max_length=50, blank=True, null=True)
+    case_no = models.CharField(max_length=50, blank=True, null=True)
+    case_year = models.CharField(max_length=4, blank=True, null=True)
+    state = models.CharField(max_length=50, blank=True, null=True)
+    district = models.CharField(max_length=50, blank=True, null=True)
+    court_type = models.CharField(max_length=50, blank=True, null=True)
+    court_name = models.CharField(max_length=50, blank=True, null=True)
+    court_no = models.CharField(max_length=50, blank=True, null=True)
+    case_type = models.ForeignKey(Case_Type,on_delete=models.DO_NOTHING, blank=True, null=True)
+    under_section = models.CharField(max_length=50, blank=True, null=True)
+    petitioner = models.CharField(max_length=50, blank=True, null=True)
+    respondent = models.CharField(max_length=50, blank=True, null=True)
+    client_type = models.CharField(max_length=50, blank=True, null=True)
+    stage_of_case = models.ForeignKey(Case_Stage,on_delete=models.DO_NOTHING, blank=True, null=True)
+    fir_number = models.CharField(max_length=50, blank=True, null=True)
+    fir_year = models.CharField(max_length=4, blank=True, null=True)
+    police_station = models.CharField(max_length=50, blank=True, null=True)
+    first_date = models.DateField(blank=True, null=True)
+    last_date = models.DateField(blank=True, null=True)
+    next_date = models.DateField(blank=True, null=True)
+    advocate = models.ForeignKey(CustomUser, blank=False, null=False, on_delete=models.CASCADE)
+    sub_advocate = models.CharField(max_length=100, null=True,blank=True)
+    comments = models.TextField(max_length=50, null=True,blank=True)
+    document = models.FileField(upload_to='media/casefiles', blank=True, null=True)
+    is_desided = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.petitioner
+
+
+
+
+    
+class Clients(BaseModel):
+    name = models.CharField(max_length=50, null=True, blank=True)
+    address = models.TextField(max_length=200, blank=True, null=True)
+    mobile = models.CharField(max_length=10, blank=True, null=True)
+    advocate = models.ForeignKey(CustomUser, blank=False, null=False, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.name
+
+class Associate_With_Client(BaseModel):
+    client = models.ForeignKey(Clients, on_delete=models.CASCADE)
+    case = models.ForeignKey(Case_Master, on_delete=models.CASCADE)
+
+    

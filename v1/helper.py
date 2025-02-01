@@ -227,3 +227,4 @@ def add_new_court(request):
         'msg' : msg,
      }
     return render(request, 'add_new_court.html', context)
+

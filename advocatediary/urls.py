@@ -30,6 +30,10 @@ urlpatterns = [
     #url for Advocate Login area
     path('advocate/adv-index', advocate_views.adv_index, name='adv_index'),
     path('advocate/newcase', advocate_views.NEWCASE, name='newcase'),
+    path('advocate/allclients', advocate_views.ALLCLIENTS, name='allclients'),
+    path('advocate/case_client_associate', advocate_views.Case_Client_Associate, name='case_client_associate'),
+    path('advocate/associate_client_and_add_more/', advocate_views.associate_client_and_add_more, name='associate_client_and_add_more'),
+    path('advocate/offcanvas_body/', advocate_views.Offcanvas_Body, name='offcanvas_body'),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

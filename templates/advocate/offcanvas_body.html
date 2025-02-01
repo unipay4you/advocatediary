@@ -1,0 +1,114 @@
+<div class="offcanvas-header">
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+</div>
+
+    
+        <div class="row">
+            <div class="col-md-12">
+                {% if case.client_type == 'Respondent' %}
+                <h4>{{case.petitioner}} / <b><u>{{case.respondent}}</u></b></h4>
+                {% else %}
+                <h4><b><u>{{case.petitioner}}</u></b> / {{case.respondent}}</h4>
+                {% endif %}
+                
+                <h5>Fixed for <b>{{case.stage_of_case}}</b></h5>
+                <h5>Next Date <b>{{case.next_date}}</b></h5>
+                <span class="or-line"></span>
+                <span class="or-line"></span>
+                <span class="or-line"></span>
+                <span class="or-line"></span>
+                <br>
+                <div class="row align-items-start">
+                    <div class="form-group col">
+                        <label><h6><b>CNR</b></h6></label>
+                        <label><h6>{{case.crn}}</h6></label>
+                    </div>
+    
+                    <div class="form-group col">
+                        <label><h6><b>Case No</b></h6></label>
+                        <h6>{{case.case_no}}/{{case.case_year}}</h6>
+                        
+                    </div>
+                </div>
+                <span class="or-line"></span>
+    
+                <div class="row align-items-start">
+                    <div class="form-group col">
+                        <label><h6><b>Court</b></h6></label>
+                        <h6>{{case.court_no}} - {{case.court_name}}</h6>
+                    </div>
+    
+                    <div class="form-group col">
+                        <label><h6><b>Case Type</b></h6></label>
+                        <h6>{{case.case_type}}</h6>
+                        
+                    </div>
+                </div>
+                <span class="or-line"></span>
+    
+                <div class="row align-items-start">
+                    <div class="form-group col">
+                        <label><h6><b>US</b></h6></label>
+                        <h6>{{case.under_section}}</h6>
+                    </div>
+    
+                    <div class="form-group col">
+                        <label><h6><b>FIR No</b></h6></label>
+                        <h6>{{case.fir_number}}/{{case.fir_year}}</h6>
+                        
+                    </div>
+                </div>
+                <span class="or-line"></span>
+    
+                <div class="row align-items-start">
+                    <div class="form-group col">
+                        <label><h6><b>Register Date</b></h6></label>
+                        <h6>{{case.first_date}}</h6>
+                    </div>
+    
+                    <div class="form-group col">
+                        <label><h6><b>Last Date</b></h6></label>
+                        <h6>{{case.last_date}}</h6>
+                        
+                    </div>
+                </div>
+                <span class="or-line"></span>
+
+                <div class="row align-items-start">
+                    <div class="form-group col">
+                        <label><h6><b>Sub Advocate</b></h6></label>
+                        <h6>{{case.sub_advocate}}</h6>
+                    </div>
+    
+                    <div class="form-group col">
+                        <label><h6><b>Comments</b></h6></label>
+                        <h6>{{case.Comments}}</h6>
+                        
+                    </div>
+                </div>
+                <span class="or-line"></span>
+                <div class="row align-items-start">
+                    <div class="form-group col">
+                        <label><h6><b>Associate Clients</b></h6></label>
+                        <a href="#">Click for Add More</a>
+                        <ol>
+                            {% for ac in associate_clients %}
+                            <li>{{forloop.counter}} - {{ac.client}}
+                                <button type="button" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                            </li>
+                            {% endfor %}
+                            
+                        </ol>
+                    </div>
+    
+                    
+                </div>
+                <span class="or-line"></span>
+    
+            </div>
+        </div>
+     
+     
+
+
+

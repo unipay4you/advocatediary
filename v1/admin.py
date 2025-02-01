@@ -18,6 +18,8 @@ admin.site.register(Case_Stage)
 admin.site.register(Case_Type)
 admin.site.register(Court_Type)
 admin.site.register(Court)
-
+admin.site.register(Clients)
+admin.site.register(Case_Master)
+admin.site.register(Associate_With_Client)
 
 

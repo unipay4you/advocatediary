@@ -16,7 +16,7 @@ SECRET_KEY = 'django-insecure-pdr(^5!$m9xob2644il^68&lw(v1n^j#&w@uu&*%)3*v)_bfi5
 DEBUG = True
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 AUTH_USER_MODEL = 'v1.CustomUser'
 

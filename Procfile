@@ -1,0 +1,1 @@
+web: gunicorn advocatediary.wsgi --log-file -

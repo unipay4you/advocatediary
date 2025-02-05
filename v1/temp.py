@@ -174,10 +174,11 @@ def rand_associate_clients():  # sourcery skip: avoid-builtin-shadow
     case_obj = Case_Master.objects.all()
 
     for case in case_obj:
+        print(case.advocate)
         rand_range = range(random.randint(0,4))
         print(rand_range)
         for _ in rand_range:
-            print(case.advocate)
+            
             client_obj = Clients.objects.filter(advocate = case.advocate)
             rand_client_id = random.randint(1, len(client_obj))
             print(rand_client_id)

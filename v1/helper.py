@@ -102,7 +102,6 @@ def check_login_validation(phone_number):
     time_diff = time_current - last_login
     time_diff = time_diff.total_seconds()
 
-    
     if time_diff > 1800:
         return False
     
@@ -227,4 +226,5 @@ def add_new_court(request):
         'msg' : msg,
      }
     return render(request, 'add_new_court.html', context)
+
 

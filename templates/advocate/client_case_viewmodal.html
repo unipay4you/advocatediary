@@ -1,0 +1,77 @@
+<!-- Modal for delink case from client -->
+<div class="modal fade" id="delinkcase" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+   <div class="modal-dialog">
+     
+       
+      <div class="modal-content">
+         
+         <div class="modal-header">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirmation</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <div class="modal-body">
+            <form method="post"> 
+               {% csrf_token %}
+               Are you sure to delink Case for Client ?
+            </form>
+              
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <a href="" type="button" id="btn_delink" class="btn btn-primary">Save changes</a>
+          </div>
+      
+      </div>
+     
+   </div>
+ </div>  
+
+<div class="table-responsive">
+    <table class="table table-striped" id="myTable">
+       <thead class="thead-light">
+          <tr>
+            <th>S.No</th>
+            <th class="text-center">Case No</th>
+            <th class="text-center">Court</th>
+            <th class="text-center">Case Title</th>
+            <th class="text-center">Next Date</th>
+            <th class="text-center">Stage</th>
+            <th class="text-center">Action</th>
+             
+
+          </tr>
+       </thead>
+       <tbody>
+         {% for case in all_case %}
+         
+         <tr id="{{case.id}}">
+            
+            <td>{{forloop.counter}}</td>
+            <td class="text-center">{{case.case.case_no}} /{{case.case.case_year}} </td>
+            <td class="text-center">{{case.case.court_no}}</td>
+            {% if case.case.client_type == 'Respondent' %}
+            <td class="text-center">{{case.case.petitioner}} V/S <b>{{case.case.respondent}}</b> </td>
+            {% else %}
+            <td class="text-center"><b>{{case.case.petitioner}}</b> V/S {{case.case.respondent}} </td>      
+            {% endif %}
+            
+            <td class="text-center">{{case.case.next_date}}</td>
+            <td class="text-center">{{case.case.stage_of_case}}</td>
+            <td>
+               <button type="button" value="/delink-case/{{case.id}}" onclick="delink_case(this.value)" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
+            </td>
+            
+         </tr>
+         {% endfor %}
+      </tbody>
+    </table>
+
+    <script>
+      function delink_case(case_id){
+         document.getElementById('btn_delink').href = case_id
+         $('#delinkcase').modal("show");
+      }
+    </script>
+    
+ </div>
+ 

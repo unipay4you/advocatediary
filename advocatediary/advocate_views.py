@@ -329,6 +329,24 @@ def Offcanvas_Body(request):
     case_id = request.GET['case_id']
     case = Case_Master.objects.get(id=case_id)
     associate_clients = Associate_With_Client.objects.filter(case = case)
-    print(associate_clients)
     return render(request, 'advocate/offcanvas_body.html', locals())
 
+
+def Client_Case_view_Modal(request):
+    phone_number = request.user
+    is_login_valid = check_login_validation(phone_number)
+
+    if not is_login_valid:
+        return HttpResponse(is_login_valid)
+
+
+    if is_first_login := is_first_time_login(phone_number):
+        return HttpResponse(is_login_valid)
+    
+    client_id = request.GET['client_id']
+    all_case = Associate_With_Client.objects.filter(client = client_id)
+    
+    context = {
+        'all_case' : all_case
+    }
+    return render(request,'advocate/client_case_viewmodal.html', context)

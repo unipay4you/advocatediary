@@ -53,6 +53,58 @@
      
    </div>
  </div>  
+
+ <!-- Modal for View Case Detail -->
+<div class="modal fade" id="casedetail" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+   <div class="modal-dialog modal-xl">
+     
+       
+      <div class="modal-content">
+         
+         <div class="modal-header">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">View Cases</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <div class="modal-body" id="viewmodal">
+            
+              
+         </div>
+         <div class="modal-footer">
+            
+         </div>
+      
+      </div>
+     
+   </div>
+ </div>  
+
+ <!-- Modal for Delete client -->
+<div class="modal fade" id="delete_client" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+   <div class="modal-dialog">
+     
+       
+      <div class="modal-content">
+         
+         <div class="modal-header">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirmation</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <div class="modal-body">
+            <form method="post"> 
+               {% csrf_token %}
+               Are you sure to delete Client ?
+            </form>
+              
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <a href="" type="button" id="btn_delete" class="btn btn-primary">Delete</a>
+          </div>
+      
+      </div>
+     
+   </div>
+ </div>
  
          
          <div class="page-wrapper">
@@ -136,8 +188,8 @@
                                        <td class="text-center">{{client.count}}</td>   
                                        <td>
                                           <button type="button" class="btn btn-outline-secondary">Edit</button>
-                                          <button type="button" class="btn btn-outline-primary">View Cases</button>
-                                          <button type="button" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                          <button type="button" onclick="function_viewcase('{{client.id}}')" class="btn btn-outline-primary">View Cases</button>
+                                          <button value="/delete-client/{{client.id}}" type="button" onclick="function_delete_client(this.value)" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                        </td>
                                        
                                     </tr>
@@ -201,12 +253,38 @@
       
    </body>
    <script>
+      function function_viewcase(client_id){
+         var url = "/advocate/client_case_viewmodal/?client_id="+client_id;
+         $.get(url, function(data, status){
+            if( data == 'False' ){
+               window.location.reload()
+            }
+            else{
+               $("#viewmodal").html(data)
+               $('#casedetail').modal("show");
+            }
+            
+         });
+
+      }
+
+      
+      function function_delete_client(value){
+         document.getElementById('btn_delete').href = value
+         $('#delete_client').modal("show");
+      }
+    
+
+      
    $(document).ready(function() {
+      
       document.getElementById("btn_newClient").addEventListener("click", function(){
          document.getElementById("alert_danger").style.display = 'none'
          $('#newclient').modal("show");
              
       });
+
+      
   });
 </script>   
 </html>

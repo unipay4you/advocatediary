@@ -455,8 +455,51 @@ def PROFILE_EDIT(request):  # sourcery skip: low-code-quality
     }
     return render(request, 'profile_edit.html', context)
 
+@login_required(login_url = 'login')
+def DELINK_CASE(request, id):
+    phone_number = request.user
+    is_login_valid = check_login_validation(phone_number)
     
+    if not is_login_valid:
+        return redirect('login')
+
+
+    if is_first_login := is_first_time_login(phone_number):
+        return redirect('profile')
+
+    associate_case_id = id
+    associate_case_obj = Associate_With_Client.objects.get(id = associate_case_id)
+    associate_case_obj.is_deleted=True
+    associate_case_obj.save()
     
+    return redirect('allclients')
+
+@login_required(login_url = 'login')
+def DELETE_CLIENT(request, id):
+    phone_number = request.user
+    is_login_valid = check_login_validation(phone_number)
+    
+    if not is_login_valid:
+        return redirect('login')
+
+
+    if is_first_login := is_first_time_login(phone_number):
+        return redirect('profile')
+
+    client_id = id
+    print(client_id)
+    client_obj = Clients.objects.get(id = client_id)
+    client_obj.is_deleted=True
+    client_obj.save()
+
+    associate_case_obj = Associate_With_Client.objects.filter(id = client_obj)
+    for associate_case in associate_case_obj:
+        associate_case.is_deleted=True
+        associate_case.save()
+    
+
+    
+    return redirect('allclients')   
     
 
     

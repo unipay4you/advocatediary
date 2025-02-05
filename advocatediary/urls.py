@@ -13,6 +13,7 @@ urlpatterns = [
 
     #login urls
     path('login', views.LOGIN, name='login'),
+    path('', views.LOGIN, name='login'),
     path('logout_page', views.logout_page, name='logout_page'),
     path('register', views.REGISTER, name='register'),
     path('resend_otp', views.RESEND_OTP, name='resend_otp'),
@@ -26,6 +27,8 @@ urlpatterns = [
     path('get_court/', views.get_court, name="get_court"),
     path('add_new_district/', views.add_new_district, name="add_new_district"),
     path('add_new_court/', views.add_new_court, name="add_new_court"),
+    path('delink-case/<id>', views.DELINK_CASE, name='delink_case'),
+    path('delete-client/<id>', views.DELETE_CLIENT, name='delete_client'),
     
     #url for Advocate Login area
     path('advocate/adv-index', advocate_views.adv_index, name='adv_index'),
@@ -34,6 +37,7 @@ urlpatterns = [
     path('advocate/case_client_associate', advocate_views.Case_Client_Associate, name='case_client_associate'),
     path('advocate/associate_client_and_add_more/', advocate_views.associate_client_and_add_more, name='associate_client_and_add_more'),
     path('advocate/offcanvas_body/', advocate_views.Offcanvas_Body, name='offcanvas_body'),
+    path('advocate/client_case_viewmodal/', advocate_views.Client_Case_view_Modal, name='client_case_view_modal'),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -90,11 +90,12 @@
                 <div class="row align-items-start">
                     <div class="form-group col">
                         <label><h6><b>Associate Clients</b></h6></label>
-                        <a href="#">Click for Add More</a>
+                        <a href="{% url 'case_client_associate' %}">Click for Add More</a>
                         <ol>
                             {% for ac in associate_clients %}
                             <li>{{forloop.counter}} - {{ac.client}}
-                                <button type="button" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                <button value="/delete-client/{{ac.id}}" type="button" onclick="function_delete_client(this.value)" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                
                             </li>
                             {% endfor %}
                             
@@ -107,7 +108,14 @@
     
             </div>
         </div>
-     
+
+<script>
+    function function_delete_client(value){
+         document.getElementById('btn_delete').href = value
+         $('#delete_client').modal("show");
+      }
+</script>
+       
      
 
 

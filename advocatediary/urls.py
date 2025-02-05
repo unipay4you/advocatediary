@@ -28,7 +28,7 @@ urlpatterns = [
     path('add_new_district/', views.add_new_district, name="add_new_district"),
     path('add_new_court/', views.add_new_court, name="add_new_court"),
     path('delink-case/<id>', views.DELINK_CASE, name='delink_case'),
-    path('delete-client/<id>', views.DELETE_CLIENT, name='delete_client'),
+    path('delete-client/<id>', views.DELETE_CLIENT, name='delete_client'), 
     
     #url for Advocate Login area
     path('advocate/adv-index', advocate_views.adv_index, name='adv_index'),

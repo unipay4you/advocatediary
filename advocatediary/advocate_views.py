@@ -283,6 +283,7 @@ def Case_Client_Associate(request):
     get_case = Case_Master.objects.get(id = case_obj)
     client_all = Clients.objects.filter(advocate = user).order_by('name')
     Associate_With_Client_obj = Associate_With_Client.objects.filter(case = case_obj)
+
     
     
     context = {
@@ -329,6 +330,7 @@ def Offcanvas_Body(request):
     case_id = request.GET['case_id']
     case = Case_Master.objects.get(id=case_id)
     associate_clients = Associate_With_Client.objects.filter(case = case)
+    request.session['case_obj'] = case_id
     return render(request, 'advocate/offcanvas_body.html', locals())
 
 

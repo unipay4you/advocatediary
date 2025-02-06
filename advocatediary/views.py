@@ -456,7 +456,7 @@ def PROFILE_EDIT(request):  # sourcery skip: low-code-quality
     return render(request, 'profile_edit.html', context)
 
 @login_required(login_url = 'login')
-def DELINK_CASE(request, id):
+def DELINK_CASE(request, id, returnURL):
     phone_number = request.user
     is_login_valid = check_login_validation(phone_number)
     
@@ -472,7 +472,9 @@ def DELINK_CASE(request, id):
     associate_case_obj.is_deleted=True
     associate_case_obj.save()
     
-    return redirect('allclients')
+    
+    print(returnURL)
+    return redirect(returnURL)
 
 @login_required(login_url = 'login')
 def DELETE_CLIENT(request, id):

@@ -189,4 +189,11 @@ class Associate_With_Client(BaseModel):
     client = models.ForeignKey(Clients, on_delete=models.CASCADE)
     case = models.ForeignKey(Case_Master, on_delete=models.CASCADE)
 
+class CaseHistory(BaseModel):
+    case = models.ForeignKey(Case_Master,on_delete=models.CASCADE)
+    last_date = models.DateField(blank=True,null=True)
+    next_date = models.DateField(blank=True,null=True)
+    particular = models.TextField(max_length=50, blank=True,null=True)
+    file = models.FileField(upload_to='media/casefiles', blank=True, null=True)
+
     

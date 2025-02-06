@@ -94,7 +94,7 @@
                         <ol>
                             {% for ac in associate_clients %}
                             <li>{{forloop.counter}} - {{ac.client}}
-                                <button value="/delete-client/{{ac.id}}" type="button" onclick="function_delete_client(this.value)" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                <button value="/delink-case/{{ac.id}}/adv_index" type="button" onclick="delink_case(this.value)" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                 
                             </li>
                             {% endfor %}
@@ -110,9 +110,10 @@
         </div>
 
 <script>
-    function function_delete_client(value){
-         document.getElementById('btn_delete').href = value
-         $('#delete_client').modal("show");
+    function delink_case(case_id){
+        document.getElementById('btn_delete').href = case_id
+        $('#delinkcase').modal("show");
+        
       }
 </script>
        

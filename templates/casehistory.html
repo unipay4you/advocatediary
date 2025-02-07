@@ -1,0 +1,43 @@
+<div class="modal-content">
+         
+    <div class="modal-header">
+       <h1 class="modal-title fs-5" id="staticBackdropLabel">Case History</h1>
+       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <table class="table table-striped" id="myTable">
+            <thead class="thead-light">
+               <tr>
+                  <th>S.No</th>
+                  <th class="text-center">Last Date</th>
+                  <th class="text-center">Next Date</th>
+                  <th class="text-center">Stage</th>
+                  <th class="text-center">Comments</th>
+                  
+               </tr>
+            </thead>
+            <tbody>
+               {% for case in case_obj %}
+               
+               <tr id="{{case.id}}">
+                  
+                  <td>{{forloop.counter}}</td>
+                  <td class="text-center">{{case.last_date}} </td>
+                  <td class="text-center">{{case.next_date}}</td>
+                  <td class="text-center">{{case.stage}}</td>
+                  <td class="text-center">{{case.particular}}</td>
+                  
+                  
+               </tr>
+               {% endfor %}
+            </tbody>
+         </table>
+       
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        
+     </div>
+    
+       
+ </div>

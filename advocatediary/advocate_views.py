@@ -66,6 +66,7 @@ def adv_index(request):
     
     current_page_number = int(page_number)
     
+    case_stage_obj = Case_Stage.objects.all()
     context = {
         'total_case' : total_case,
         'active_case' : active_case,
@@ -77,6 +78,7 @@ def adv_index(request):
         'page_range' : page_range,
         'current_page_number' : current_page_number,
         'list_filter' : list_filter,
+        'case_stage_obj' : case_stage_obj
         
     }
 

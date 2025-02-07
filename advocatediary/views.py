@@ -521,6 +521,7 @@ def UPDATE_DATE(request):
         return redirect('login')
     case_id = request.POST.get('case_id')
     next_date = request.POST.get('next_date')
+    stage_of_case = request.POST.get('stage_of_case')
     comments = request.POST.get('comments')
     returnURL = request.POST.get('returnURL')
     file = request.FILES.get('file')
@@ -535,21 +536,36 @@ def UPDATE_DATE(request):
         last_date = last_date,
         next_date = next_date,
         particular = comments,
-        file = file
+        file = file,
+        stage = stage_of_case
     )
 
     case_obj.last_date = last_date
     case_obj.next_date = next_date
     case_obj.save()
 
-    print(case_id)
-    print(next_date)
-    print(comments)
-    print(returnURL)
-    print(file)
-    print(last_date)
-
     return redirect(returnURL)
+
+@transaction.atomic
+@login_required(login_url = 'login')
+def CASE_HISTORY(request):
+    phone_number = request.user
+    is_login_valid = check_login_validation(phone_number)
+
+    if not is_login_valid:
+        return redirect('login')
+
+
+    if is_first_login := is_first_time_login(phone_number):
+        return redirect('profile')
+
+    case_id = request.GET.get('case_id')
+    case_obj = CaseHistory.objects.filter(case = case_id).order_by('-last_date')
+    print(case_obj)
+    context = {
+        'case_obj' : case_obj
+    }
+    return render(request, 'casehistory.html',context)
     
     
     

@@ -14,7 +14,17 @@
          {% include 'header.html' %}
          {% include 'sidebar.html' %}
          
-<!-- Modal for Next Date Update -->
+<!-- Modal for Case History -->
+<div class="modal fade" id="modal_casehistory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+   <div class="modal-dialog modal-lg" id="modal_casehistory_obj">
+     
+       
+      
+     
+   </div>
+ </div>
+
+         <!-- Modal for Next Date Update -->
          <div class="modal fade" id="modal_nextdate" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
               
@@ -29,20 +39,32 @@
                      <form method="post" action="{% url 'update_date' %}" enctype="multipart/form-data"> 
                         {% csrf_token %}
                      
-                     <div id="form-group">
+                     <div id="form-group col">
                         <h3 class="modal-title fs-5" id="modal_title"></h3>
                      </div>
                         <input type="hidden" name="returnURL" value="{{request.build_absolute_uri}}">
                         <input type="hidden" name="case_id" value="">
-                     <div class="form-group">
+                     <div class="form-group col">
                         <label>Next Date</label>
                         
                         <input class="form-control" name="next_date" type="date" required>
                      </div>
-                     <div class="form-group">
+                     <div class="form-group col" >
+                        <label>Fixed For</label>
+                        <select class="form-control" name="stage_of_case" id="year">
+                           <option value="None" selected>Select Stage of Case</option>
+                            {% for case_stage in case_stage_obj %}
+                            <option value="{{case_stage.stage_of_case}}">{{case_stage.stage_of_case}}</option>
+                            {% endfor %}
+                            
+                        </select>
+                        
+                    </div>
+                     
+                     <div class="form-group col">
                         <input class="form-control" name="comments" maxlength="50" type="text" placeholder="Comments">
                      </div>
-                     <div class="form-group">
+                     <div class="form-group col">
                         <input class="form-control" name="file" type="file">
                      </div>
                      <div class="modal-footer">
@@ -103,7 +125,7 @@
                        <div class="row row-cols-lg-3 g-1 g-lg-3">
                            <div class="col">
                                <div class="p-3">
-                                   <button type="button" class="btn btn-outline-primary">Case History</button>
+                                   <button type="button" id="btn_casehistory" value="" onclick="function_casehistory(this.value)" class="btn btn-outline-primary">Case History</button>
                                    
                                </div>
                            </div>
@@ -325,8 +347,20 @@
             var url = "/advocate/offcanvas_body/?case_id="+id+'&filter='+filter;
                 $.get(url, function(data, status){
                   document.getElementById('btn_nextdate').value = id
+                  document.getElementById('btn_casehistory').value = id
                   $("#offcanvas_body").html(data)
                 });
+         };
+
+         function function_casehistory(id){
+            var url = "/casehistory/?case_id="+id;
+            $.get(url, function(data, status){
+               $('#modal_casehistory').modal("show");
+               $("#modal_casehistory_obj").html(data);
+            });
+            
+            
+            
          };
 
          function function_modal_nextdate(id){

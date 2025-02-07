@@ -193,6 +193,7 @@ class CaseHistory(BaseModel):
     case = models.ForeignKey(Case_Master,on_delete=models.CASCADE)
     last_date = models.DateField(blank=True,null=True)
     next_date = models.DateField(blank=True,null=True)
+    stage = models.CharField(max_length=50, blank=True, null=True)
     particular = models.TextField(max_length=50, blank=True,null=True)
     file = models.FileField(upload_to='media/casefiles', blank=True, null=True)
 

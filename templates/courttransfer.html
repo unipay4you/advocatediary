@@ -1,0 +1,79 @@
+<div class="modal-content">
+         
+    <div class="modal-header">
+       <h1 class="modal-title fs-5" id="staticBackdropLabel">Court Transfer</h1>
+       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <table class="table table-striped" id="myTable"> Old Court Detail
+            <thead class="thead-light">
+               <tr>
+                  <th class="text-center">Court Name</th>
+                  <th class="text-center">Court No</th>
+               </tr>
+            </thead>
+            <tbody>
+               
+               <tr id="{{case.id}}">
+                  
+                  <td class="text-center">{{case.court_name}} </td>
+                  <td class="text-center">{{case.court_no}}</td>
+                  
+               </tr>
+               
+            </tbody>
+         </table>
+       
+    </div>
+
+    <form method="post" action="{% url 'update_court' %}"> 
+      {% csrf_token %}
+   
+   <div class="form-group col">
+      <input type="hidden" name="case_id" value="{{case.id}}">
+      <label>New Court Name</label>
+      <select class="form-control" name="new_court" id="year">
+         <option value="None" selected>Select Court</option>
+          {% for court in court_obj %}
+          {% if case.court_no != court.court_no %}
+          <option value="{{court.id}}">{{court.court_no}} - {{court.court_name}}</option>
+          {% endif%}
+          
+          {% endfor %}
+          
+      </select>
+   </div>
+   <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      <button type="submit" id="btn_updatedate" class="btn btn-primary">update</button>
+      
+   </div>
+</form>
+
+<div class="modal-body">
+   <table class="table table-striped" id="myTable"> History
+       <thead class="thead-light">
+          <tr>
+             <th class="text-center">S.No</th>
+             <th class="text-center">Date</th>
+             <th class="text-center">Detail</th>
+          </tr>
+       </thead>
+       <tbody>
+          {% for courttransfer in courttransfer_obj%}
+          <tr id="{{case.id}}">
+            <td class="text-center">{{forloop.counter}} </td>
+             <td class="text-center">{{courttransfer.date}} </td>
+             <td class="text-center">Transfer from {{courttransfer.old_court}} to {{courttransfer.new_court}} </td>
+             
+          </tr>
+          {% endfor %}
+          
+       </tbody>
+    </table>
+  
+</div>
+       
+ </div>
+
+ 

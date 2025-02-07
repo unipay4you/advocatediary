@@ -197,4 +197,10 @@ class CaseHistory(BaseModel):
     particular = models.TextField(max_length=50, blank=True,null=True)
     file = models.FileField(upload_to='media/casefiles', blank=True, null=True)
 
+class CourtTransfer(BaseModel):
+    case = models.ForeignKey(Case_Master,on_delete=models.CASCADE)
+    date = models.DateField(auto_now_add=True)
+    old_court = models.CharField(max_length=50, blank=True,null=True)
+    new_court = models.CharField(max_length=50, blank=True,null=True)
+
     

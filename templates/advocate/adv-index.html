@@ -24,6 +24,17 @@
    </div>
  </div>
 
+
+ <!-- Modal for Cour Transfer -->
+<div class="modal fade" id="modal_courttransfer" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+   <div class="modal-dialog modal-lg" id="modal_courttransfer_obj">
+     
+       
+      
+     
+   </div>
+ </div>
+
          <!-- Modal for Next Date Update -->
          <div class="modal fade" id="modal_nextdate" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -137,7 +148,8 @@
                            </div>
                            <div class="col">
                                <div class="p-3">
-                                   <button type="button" class="btn btn-outline-primary">Court Transfer</button>
+                                    <button type="button" id="btn_courttransfer" value="" onclick="function_courttransfer(this.value)" class="btn btn-outline-primary">Court Transfer</button>
+                                    
                                </div>
                            </div>
                        </div>
@@ -348,6 +360,7 @@
                 $.get(url, function(data, status){
                   document.getElementById('btn_nextdate').value = id
                   document.getElementById('btn_casehistory').value = id
+                  document.getElementById('btn_courttransfer').value = id
                   $("#offcanvas_body").html(data)
                 });
          };
@@ -362,6 +375,19 @@
             
             
          };
+
+         function function_courttransfer(id){
+            var url = "/courttransfer/?case_id="+id;
+            $.get(url, function(data, status){
+               $('#modal_courttransfer').modal("show");
+               $("#modal_courttransfer_obj").html(data);
+            });
+            
+            
+            
+         };
+
+         modal_courttransfer_obj
 
          function function_modal_nextdate(id){
             

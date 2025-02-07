@@ -561,13 +561,91 @@ def CASE_HISTORY(request):
 
     case_id = request.GET.get('case_id')
     case_obj = CaseHistory.objects.filter(case = case_id).order_by('-last_date')
-    print(case_obj)
     context = {
         'case_obj' : case_obj
     }
     return render(request, 'casehistory.html',context)
     
+
+@transaction.atomic
+@login_required(login_url = 'login')
+def COURT_TRANSFER(request):
+    phone_number = request.user
+    is_login_valid = check_login_validation(phone_number)
+
+    if not is_login_valid:
+        return redirect('login')
+
+
+    if is_first_login := is_first_time_login(phone_number):
+        return redirect('profile')
     
+        
+
+    case_id = request.GET.get('case_id')
+    case_obj = Case_Master.objects.get(id = case_id)
+
+    state = case_obj.state
+    district = case_obj.district
+    court_type = case_obj.court_type
+    
+    court_obj = Court.objects.filter(state__state__contains = state, district__district__contains = district, court_type__court_type = court_type).order_by('court_no')
+    courttransfer_obj = CourtTransfer.objects.filter(case = case_obj).order_by('date')
+
+    
+    context = {
+        'case' : case_obj,
+        'court_obj' : court_obj,
+        'courttransfer_obj' : courttransfer_obj
+    }
+    return render(request, 'courttransfer.html',context)
+
+
+@transaction.atomic
+@login_required(login_url = 'login')
+def UPDATE_COURT(request):
+    phone_number = request.user
+    is_login_valid = check_login_validation(phone_number)
+
+    if not is_login_valid:
+        return redirect('login')
+
+
+    if is_first_login := is_first_time_login(phone_number):
+        return redirect('profile')
+    
+    if request.method == 'POST':
+        new_court = request.POST.get('new_court')
+        case_id = request.POST.get('case_id')
+
+        if new_court != 'None':
+            case_obj = Case_Master.objects.get(id = case_id)
+            court_obj = Court.objects.get(id = new_court)
+
+            old_court = case_obj.court_no
+            new_court = court_obj.court_no
+
+            case_obj.court_name = court_obj.court_name
+            case_obj.court_no = court_obj.court_no
+            case_obj.save()
+
+            CourtTransfer.objects.create(
+                case = case_obj,
+                old_court = old_court,
+                new_court = new_court
+            )
+
+            case_history_obj = CaseHistory.objects.create(
+                case = case_obj,
+                last_date = datetime.datetime.now().date(),
+                next_date = datetime.datetime.now().date(),
+                particular = f"Transer from {old_court} to {new_court}",
+                stage = 'None'
+            )
+    
+    return redirect('adv_index')
+
+
     
 
     

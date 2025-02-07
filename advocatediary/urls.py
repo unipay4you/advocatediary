@@ -31,7 +31,9 @@ urlpatterns = [
     path('delete-client/<id>', views.DELETE_CLIENT, name='delete_client'), 
     path('update-date', views.UPDATE_DATE, name='update_date'), 
     path('casehistory/', views.CASE_HISTORY, name='casehistory'), 
-    
+    path('courttransfer/', views.COURT_TRANSFER, name='courttransfer'), 
+    path('update_court', views.UPDATE_COURT, name='update_court'),
+
     #url for Advocate Login area
     path('advocate/adv-index', advocate_views.adv_index, name='adv_index'),
     path('advocate/newcase', advocate_views.NEWCASE, name='newcase'),

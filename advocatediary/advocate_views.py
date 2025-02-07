@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
 from django.db.models import Max,Min,Q, Count
 from datetime import datetime, timedelta
+from django.db import transaction
 
 
 
@@ -35,7 +36,7 @@ def adv_index(request):
     elif list_filter == 'tommarow':
         cases_list = all_case.filter(next_date = datetime.now().date()+timedelta(1))
     elif list_filter == 'date_awaited':
-        cases_list = all_case.filter(next_date__lte = datetime.now().date())
+        cases_list = all_case.filter(next_date__lt = datetime.now().date())
     else: #All cases
         cases_list = all_case
 
@@ -43,7 +44,7 @@ def adv_index(request):
     active_case = len(all_case.filter(is_active = True))
     today_cases = len(all_case.filter(next_date = datetime.now().date()))
     tommarow_cases  = len(all_case.filter(next_date = datetime.now().date()+timedelta(1)))
-    date_awaited_case = len(all_case.filter(next_date__lte = datetime.now().date()))
+    date_awaited_case = len(all_case.filter(next_date__lt = datetime.now().date()))
     
 
     #if request.GET.get('search'):
@@ -75,13 +76,13 @@ def adv_index(request):
         'lastpage' : totalpage,
         'page_range' : page_range,
         'current_page_number' : current_page_number,
-        'list_filter' : list_filter
-
+        'list_filter' : list_filter,
+        
     }
 
     return render(request, 'advocate/adv-index.html', context)
 
-
+@transaction.atomic
 @login_required(login_url = 'login')
 def NEWCASE(request):
     phone_number = request.user
@@ -182,6 +183,15 @@ def _extracted_from_NEWCASE(request, user):
         sub_advocate = sub_advocate,
         comments = comments,
         document = document
+    )
+
+    #add data in case history modale
+
+    casehistoryObj = CaseHistory.objects.create(
+        case = case_obj,
+        last_date = case_obj.last_date,
+        next_date = case_obj.next_date,
+        particular = case_obj.comments
     )
 
     request.session['case_obj'] = case_obj.id
@@ -328,6 +338,7 @@ def associate_client_and_add_more(request):
 
 def Offcanvas_Body(request):
     case_id = request.GET['case_id']
+    list_filter = request.GET['filter']
     case = Case_Master.objects.get(id=case_id)
     associate_clients = Associate_With_Client.objects.filter(case = case)
     request.session['case_obj'] = case_id

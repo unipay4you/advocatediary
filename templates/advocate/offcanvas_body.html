@@ -12,7 +12,14 @@
                 {% endif %}
                 
                 <h5>Fixed for <b>{{case.stage_of_case}}</b></h5>
+                {% if list_filter == 'today' or list_filter == 'date_awaited' %}
+                <h5>Next Date <b><a href="#" id="{{case.id}}" onclick="function_modal_nextdate('{{case.id}}')">{{case.next_date}}</a></b></h5>
+                
+                {% else %}
                 <h5>Next Date <b>{{case.next_date}}</b></h5>
+                {% endif %}
+
+                
                 <span class="or-line"></span>
                 <span class="or-line"></span>
                 <span class="or-line"></span>

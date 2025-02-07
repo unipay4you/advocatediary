@@ -14,6 +14,52 @@
          {% include 'header.html' %}
          {% include 'sidebar.html' %}
          
+<!-- Modal for Next Date Update -->
+         <div class="modal fade" id="modal_nextdate" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              
+                
+               <div class="modal-content">
+                  
+                  <div class="modal-header">
+                     <h1 class="modal-title fs-5" id="staticBackdropLabel">Update Next Date</h1>
+                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                     <form method="post" action="{% url 'update_date' %}" enctype="multipart/form-data"> 
+                        {% csrf_token %}
+                     
+                     <div id="form-group">
+                        <h3 class="modal-title fs-5" id="modal_title"></h3>
+                     </div>
+                        <input type="hidden" name="returnURL" value="{{request.build_absolute_uri}}">
+                        <input type="hidden" name="case_id" value="">
+                     <div class="form-group">
+                        <label>Next Date</label>
+                        
+                        <input class="form-control" name="next_date" type="date" required>
+                     </div>
+                     <div class="form-group">
+                        <input class="form-control" name="comments" maxlength="50" type="text" placeholder="Comments">
+                     </div>
+                     <div class="form-group">
+                        <input class="form-control" name="file" type="file">
+                     </div>
+                     <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" id="btn_updatedate" class="btn btn-primary">update</button>
+                        
+                     </div>
+                  </form>
+                  </div>
+                  
+                  
+                     
+               </div>
+              
+            </div>
+          </div>
+
          <!-- Modal for Delete client -->
 <div class="modal fade" id="delinkcase" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
    <div class="modal-dialog">
@@ -64,7 +110,7 @@
                       
                            <div class="col">
                                <div class="p-3">
-                                   <button type="button" class="btn btn-outline-primary">Next Date</button>
+                                   <button type="button" id="btn_nextdate" value="" onclick="function_modal_nextdate(this.value)" class="btn btn-outline-primary">Next Date</button>
                                </div>
                            </div>
                            <div class="col">
@@ -197,16 +243,22 @@
                                        <td class="text-center">{{case.court_no}}</td>
                                        <td class="text-center">{{case.last_date}}</td>
                                        {% if case.client_type == 'Respondent' %}
-                                       <td class="text-center">{{case.petitioner}} V/S <b>{{case.respondent}}</b> </td>
+                                       <td class="text-center" id="title_{{case.id}}">{{case.petitioner}} V/S <b>{{case.respondent}}</b> </td>
                                        {% else %}
-                                       <td class="text-center"><b>{{case.petitioner}}</b> V/S {{case.respondent}} </td>      
+                                       <td class="text-center" id="title_{{case.id}}"><b>{{case.petitioner}}</b> V/S {{case.respondent}} </td>      
                                        {% endif %}
                                        
-                                       <td class="text-center">{{case.next_date}}</td>
+                                       <td class="text-center">
+                                          {% if list_filter == 'today' or list_filter == 'date_awaited' %}
+                                          <a href="#" id="{{case.id}}" onclick="function_modal_nextdate('{{case.id}}')">{{case.next_date}}</a>
+                                          {% else %}
+                                          <a>{{case.next_date}}</a>
+                                          {% endif %}
+                                       </td>
                                        <td class="text-center">{{case.stage_of_case}}</td>
                                        <td>
                                           <button type="button" class="btn btn-outline-secondary">Edit</button>
-                                          <button type="button" onclick="function_oncanvas('{{case.id}}')" class="btn btn-outline-primary"data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Detail</button>
+                                          <button type="button" onclick="function_oncanvas('{{case.id}}', '{{list_filter}}')" class="btn btn-outline-primary"data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Detail</button>
                                           <button type="button" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                        </td>
                                        
@@ -269,12 +321,23 @@
       <script src="{% static 'assets/plugins/apexchart/chart-data.js' %}"></script>
       <script src="{% static 'assets/js/script.js' %}"></script>
       <script>
-         function function_oncanvas(id){
-            var url = "/advocate/offcanvas_body/?case_id="+id;
+         function function_oncanvas(id, filter){
+            var url = "/advocate/offcanvas_body/?case_id="+id+'&filter='+filter;
                 $.get(url, function(data, status){
+                  document.getElementById('btn_nextdate').value = id
                   $("#offcanvas_body").html(data)
                 });
          };
+
+         function function_modal_nextdate(id){
+            
+            document.getElementsByName('case_id')[0].value = id
+            title = document.getElementById('title_' + id).innerHTML
+            document.getElementById('modal_title').innerHTML = title
+            $('#modal_nextdate').modal("show");
+         };
+
+         
       </script>
       
    </body>

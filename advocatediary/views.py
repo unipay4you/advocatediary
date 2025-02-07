@@ -14,6 +14,7 @@ import random
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+from django.db import transaction
 
 
 
@@ -501,7 +502,56 @@ def DELETE_CLIENT(request, id):
     
 
     
-    return redirect('allclients')   
+    return redirect('allclients')
+
+@transaction.atomic
+@login_required(login_url = 'login')
+def UPDATE_DATE(request):
+    phone_number = request.user
+    is_login_valid = check_login_validation(phone_number)
+
+    if not is_login_valid:
+        return redirect('login')
+
+
+    if is_first_login := is_first_time_login(phone_number):
+        return redirect('profile')
+
+    if request.method != 'POST':
+        return redirect('login')
+    case_id = request.POST.get('case_id')
+    next_date = request.POST.get('next_date')
+    comments = request.POST.get('comments')
+    returnURL = request.POST.get('returnURL')
+    file = request.FILES.get('file')
+
+    
+
+    case_obj = Case_Master.objects.get(id = case_id)
+    last_date = case_obj.next_date
+
+    case_history_obj = CaseHistory.objects.create(
+        case = case_obj,
+        last_date = last_date,
+        next_date = next_date,
+        particular = comments,
+        file = file
+    )
+
+    case_obj.last_date = last_date
+    case_obj.next_date = next_date
+    case_obj.save()
+
+    print(case_id)
+    print(next_date)
+    print(comments)
+    print(returnURL)
+    print(file)
+    print(last_date)
+
+    return redirect(returnURL)
+    
+    
     
 
     

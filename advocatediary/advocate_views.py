@@ -25,7 +25,7 @@ def adv_index(request):
     if is_first_login := is_first_time_login(phone_number):
         return redirect('profile')
     
-    all_case = Case_Master.objects.filter(advocate = phone_number).order_by('court_no')
+    all_case = Case_Master.objects.filter(advocate = phone_number, is_active = True).order_by('court_no')
     
     list_filter = 'today' #defalt for display today list
     if request.GET.get('filter'):
@@ -365,3 +365,79 @@ def Client_Case_view_Modal(request):
         'all_case' : all_case
     }
     return render(request,'advocate/client_case_viewmodal.html', context)
+
+@transaction.atomic
+@login_required(login_url = 'login')
+def CASEEDIT(request, id):
+    phone_number = request.user
+    is_login_valid = check_login_validation(phone_number)
+
+    if not is_login_valid:
+        return redirect('login')
+
+
+    if is_first_login := is_first_time_login(phone_number):
+        return redirect('profile')
+    
+    case_obj = Case_Master.objects.get(id = id)
+    court_obj = Court.objects.filter(state__state__contains = case_obj.state, district__district__contains = case_obj.district).order_by('court_no')
+    case_type_obj = Case_Type.objects.all()
+    case_stage = Case_Stage.objects.all()
+
+    if request.method == 'POST':
+        return _extracted_from_CASEEDIT(request, case_obj)
+
+    context = {
+        'case_obj' : case_obj,
+        'court_obj' : court_obj,
+        'case_type_obj' : case_type_obj,
+        'case_stage' : case_stage
+    }
+    return render(request, 'advocate/case_edit.html', context)
+
+def _extracted_from_CASEEDIT(request, case_obj):
+    cnr = request.POST.get('cnr')
+    case_no = request.POST.get('case_no')
+    year = request.POST.get('year')
+    court_id = request.POST.get('court')
+    court_name_obj = Court.objects.get(id = court_id)
+    court_name = court_name_obj.court_name
+    court_no = court_name_obj.court_no
+    case_type_id = request.POST.get('case_type')
+    case_type = Case_Type.objects.get(id = case_type_id)
+    under_section = request.POST.get('under_section').upper()
+    petitioner = request.POST.get('petitioner').upper()
+    respondent = request.POST.get('respondent').upper()
+    client_type = request.POST.get('client_type')  #1 For Petitioner #2 for Respondent
+    case_stage_id = request.POST.get('case_stage')
+    case_stage = Case_Stage.objects.get(id = case_stage_id)
+    
+    fir_no = request.POST.get('fir_no')
+    fir_year = request.POST.get('fir_year')
+    police_station = request.POST.get('police_station')
+    sub_advocate = request.POST.get('sub_advocate')
+    comments = request.POST.get('comments')
+    document = request.FILES.get('document')
+
+
+    case_obj.crn =case_no
+    case_obj.case_year = year
+    case_obj.court_name = court_name
+    case_obj.court_no = court_no
+    case_obj.case_type = case_type
+    case_obj.under_section = under_section
+    case_obj.petitioner = petitioner
+    case_obj.respondent = respondent
+    case_obj.client_type = client_type
+    case_obj.stage_of_case = case_stage
+    case_obj.fir_number = fir_no
+    case_obj.fir_year = fir_year
+    case_obj.police_station = police_station
+
+    case_obj.sub_advocate = sub_advocate
+    case_obj.comments = comments
+    case_obj.document = document
+
+    case_obj.save()
+    return redirect('adv_index')
+    

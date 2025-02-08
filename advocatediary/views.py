@@ -564,7 +564,7 @@ def CASE_HISTORY(request):
         return redirect('profile')
 
     case_id = request.GET.get('case_id')
-    case_obj = CaseHistory.objects.filter(case = case_id).order_by('-next_date', '-last_date')
+    case_obj = CaseHistory.objects.filter(case = case_id).order_by('-id', '-last_date',)
     context = {
         'case_obj' : case_obj
     }
@@ -684,9 +684,9 @@ def CASE_CLOSED_UPDATE(request):
 
     if is_first_login := is_first_time_login(phone_number):
         return redirect('profile')
-    
+
     print('1')
-    
+
     if request.method == 'POST':
         print('2')
         case_id = request.POST.get('case_id')
@@ -696,15 +696,13 @@ def CASE_CLOSED_UPDATE(request):
         case_obj = Case_Master.objects.get(id = case_id)
 
         stage_obj = Case_Stage.objects.get(stage_of_case__contains = action)
-        
+
         case_obj.stage_of_case = stage_obj
 
-        if(action == 'Decided'):
+        if (action == 'Decided'):
             case_obj.is_desided = True
-            
-        else:
-            case_obj.is_active = False
-        
+        case_obj.is_active = False
+
         case_obj.save()
 
         CaseHistory.objects.create(

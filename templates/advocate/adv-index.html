@@ -301,8 +301,8 @@
                                           {% endif %}
                                        </td>
                                        <td class="text-center">{{case.stage_of_case}}</td>
-                                       <td>
-                                          <button type="button" class="btn btn-outline-secondary">Edit</button>
+                                       <td class="text-center">
+                                          <a href="case-edit/{{case.id}}" type="button"  class="btn btn-outline-secondary">Edit</a>
                                           <button type="button" onclick="function_oncanvas('{{case.id}}', '{{list_filter}}')" class="btn btn-outline-primary"data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Detail</button>
                                           <button type="button" class="btn btn-outline-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Action</button>
                                           <ul class="dropdown-menu">

@@ -39,6 +39,7 @@ urlpatterns = [
     #url for Advocate Login area
     path('advocate/adv-index', advocate_views.adv_index, name='adv_index'),
     path('advocate/newcase', advocate_views.NEWCASE, name='newcase'),
+    path('advocate/case-edit/<id>', advocate_views.CASEEDIT, name='case_edit'),
     path('advocate/allclients', advocate_views.ALLCLIENTS, name='allclients'),
     path('advocate/case_client_associate', advocate_views.Case_Client_Associate, name='case_client_associate'),
     path('advocate/associate_client_and_add_more/', advocate_views.associate_client_and_add_more, name='associate_client_and_add_more'),

@@ -14,7 +14,18 @@
          {% include 'header.html' %}
          {% include 'sidebar.html' %}
          
-<!-- Modal for Case History -->
+<!-- Modal for case convert in close -->
+<div class="modal fade" id="modal_caseclose" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+   <div class="modal-dialog" id="modal_caseclose_obj">
+     
+       
+      
+     
+   </div>
+ </div>
+
+
+         <!-- Modal for Case History -->
 <div class="modal fade" id="modal_casehistory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
    <div class="modal-dialog modal-lg" id="modal_casehistory_obj">
      
@@ -61,8 +72,8 @@
                         <input class="form-control" name="next_date" type="date" required>
                      </div>
                      <div class="form-group col" >
-                        <label>Fixed For</label>
-                        <select class="form-control" name="stage_of_case" id="year">
+                        <label>Fixed For - (Leave if same stage of case )</label>
+                        <select class="form-control" name="stage_of_case" id="md_sg">
                            <option value="None" selected>Select Stage of Case</option>
                             {% for case_stage in case_stage_obj %}
                             <option value="{{case_stage.stage_of_case}}">{{case_stage.stage_of_case}}</option>
@@ -293,7 +304,12 @@
                                        <td>
                                           <button type="button" class="btn btn-outline-secondary">Edit</button>
                                           <button type="button" onclick="function_oncanvas('{{case.id}}', '{{list_filter}}')" class="btn btn-outline-primary"data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Detail</button>
-                                          <button type="button" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                          <button type="button" class="btn btn-outline-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Action</button>
+                                          <ul class="dropdown-menu">
+                                             <li><button type="button" class="dropdown-item" onclick="function_modal_caseclosed('{{case.id}}', 'Decided')">Decided</button></li>
+                                             <li><hr class="dropdown-divider"></li>
+                                             <li><button type="button" class="dropdown-item"  onclick="function_modal_caseclosed('{{case.id}}', 'Closed')">Closed - Other</button></li>
+                                           </ul>
                                        </td>
                                        
                                     </tr>
@@ -387,7 +403,18 @@
             
          };
 
-         modal_courttransfer_obj
+       
+         
+
+         function function_modal_caseclosed(id, action){
+            
+            var url = "/case_closed/?case_id="+id+'&action='+action;
+            $.get(url, function(data, status){
+               $('#modal_caseclose').modal("show");
+               $("#modal_caseclose_obj").html(data);
+            });
+            
+         };
 
          function function_modal_nextdate(id){
             

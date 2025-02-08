@@ -1,0 +1,27 @@
+<div class="modal-content">
+         
+    <div class="modal-header">
+       <h1 class="modal-title fs-5" id="staticBackdropLabel">Case {{action}}</h1>
+       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    
+    <form method="post" action="{% url 'case_closed_update' %}"> 
+      {% csrf_token %}
+   
+   <div class="form-group col">
+      <input type="hidden" name="case_id" value="{{case_id}}">
+      <input type="hidden" name="action" value="{{action}}">
+      <label>Comments</label>
+      <input type="text" class="form-control" name="comments">
+      
+   </div>
+   <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      <button type="submit" id="btn_updatedate" class="btn btn-primary">update</button>
+      
+   </div>
+</form>
+
+ </div>
+
+ 

@@ -33,6 +33,8 @@ urlpatterns = [
     path('casehistory/', views.CASE_HISTORY, name='casehistory'), 
     path('courttransfer/', views.COURT_TRANSFER, name='courttransfer'), 
     path('update_court', views.UPDATE_COURT, name='update_court'),
+    path('case_closed/', views.CASE_CLOSED, name='case_closed'),
+    path('case_closed_update', views.CASE_CLOSED_UPDATE, name='case_closed_update'),
 
     #url for Advocate Login area
     path('advocate/adv-index', advocate_views.adv_index, name='adv_index'),

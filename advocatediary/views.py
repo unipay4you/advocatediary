@@ -526,6 +526,10 @@ def UPDATE_DATE(request):
     returnURL = request.POST.get('returnURL')
     file = request.FILES.get('file')
 
+    if(stage_of_case == 'None'):
+        case_obj_for_get_old_stage = Case_Master.objects.get(id = case_id)
+        stage_of_case = case_obj_for_get_old_stage.stage_of_case
+
     
 
     case_obj = Case_Master.objects.get(id = case_id)
@@ -560,7 +564,7 @@ def CASE_HISTORY(request):
         return redirect('profile')
 
     case_id = request.GET.get('case_id')
-    case_obj = CaseHistory.objects.filter(case = case_id).order_by('-last_date')
+    case_obj = CaseHistory.objects.filter(case = case_id).order_by('-next_date', '-last_date')
     context = {
         'case_obj' : case_obj
     }
@@ -645,6 +649,73 @@ def UPDATE_COURT(request):
     
     return redirect('adv_index')
 
+
+@transaction.atomic
+@login_required(login_url = 'login')
+def CASE_CLOSED(request):
+    phone_number = request.user
+    is_login_valid = check_login_validation(phone_number)
+
+    if not is_login_valid:
+        return redirect('login')
+
+
+    if is_first_login := is_first_time_login(phone_number):
+        return redirect('profile')
+    
+    case_id = request.GET.get('case_id')
+    action = request.GET.get('action')
+    context = {
+        'case_id' : case_id,
+        'action' : action
+    }
+    
+    return render(request,'case_decided.html', context)
+
+@transaction.atomic
+@login_required(login_url = 'login')
+def CASE_CLOSED_UPDATE(request):
+    phone_number = request.user
+    is_login_valid = check_login_validation(phone_number)
+
+    if not is_login_valid:
+        return redirect('login')
+
+
+    if is_first_login := is_first_time_login(phone_number):
+        return redirect('profile')
+    
+    print('1')
+    
+    if request.method == 'POST':
+        print('2')
+        case_id = request.POST.get('case_id')
+        action = request.POST.get('action')
+        comments = request.POST.get('comments')
+
+        case_obj = Case_Master.objects.get(id = case_id)
+
+        stage_obj = Case_Stage.objects.get(stage_of_case__contains = action)
+        
+        case_obj.stage_of_case = stage_obj
+
+        if(action == 'Decided'):
+            case_obj.is_desided = True
+            
+        else:
+            case_obj.is_active = False
+        
+        case_obj.save()
+
+        CaseHistory.objects.create(
+            case = case_obj,
+            last_date = datetime.datetime.now().date(),
+            next_date = datetime.datetime.now().date(),
+            particular = comments,
+            stage = action
+        )
+
+    return redirect('adv_index')
 
     
 

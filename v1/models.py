@@ -48,7 +48,7 @@ class District(models.Model):
 
     def __str__(self):
         return self.district
-
+    
 class Bar(models.Model):
     bar = models.CharField(max_length=100,null=True, blank=True)
     district = models.ForeignKey(District, on_delete=models.CASCADE)
@@ -117,6 +117,8 @@ class Case_Stage(models.Model):
 
     def __str__(self):
         return self.stage_of_case
+    
+    
 
 class Case_Type(models.Model):
     case_type = models.CharField(max_length=50, blank=True, null=True)
@@ -174,7 +176,6 @@ class Case_Master(BaseModel):
 
 
 
-
     
 class Clients(BaseModel):
     name = models.CharField(max_length=50, null=True, blank=True)
@@ -202,5 +203,9 @@ class CourtTransfer(BaseModel):
     date = models.DateField(auto_now_add=True)
     old_court = models.CharField(max_length=50, blank=True,null=True)
     new_court = models.CharField(max_length=50, blank=True,null=True)
+
+
+
+
 
     

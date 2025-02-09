@@ -97,7 +97,7 @@
                 <div class="row align-items-start">
                     <div class="form-group col">
                         <label><h6><b>Associate Clients</b></h6></label>
-                        <a href="{% url 'case_client_associate' %}">Click for Add More</a>
+                        <a href="/advocate/case_client_associate/{{case.id}}">Click for Add More</a>
                         <ol>
                             {% for ac in associate_clients %}
                             <li>{{forloop.counter}} - {{ac.client}}

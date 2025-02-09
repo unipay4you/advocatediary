@@ -24,7 +24,7 @@
                   <div class="row">
                      <div class="col-sm-12">
                         <ul class="breadcrumb">
-                           <li class="breadcrumb-item active">Case Associate with Client</li>
+                           <li class="breadcrumb-item active">Case Associate with Client </li>
                         </ul>
                      </div>
                   </div>
@@ -40,11 +40,27 @@
                                 
                         <div class="card-body">
                             <div class="row align-items-start">
+                                {% if case_obj == '0' %}
+                                <div class="form-group col">
+                                    <label><h6>Select Case</h6></label>
+                                    <select class="form-control" name="case" id="case" onchange="function_case(this.value)">
+                                        <option value="0">Select</option>
+                                        {% for cs in case %}
+                                        
+                                        <option value="{{cs.id}}">{{cs.petitioner}} Vs {{cs.respondent}} => {{cs.next_date}} => {{cs.court_no}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <br>
+                                    <a href="" id="btn_select" type="button" class="btn btn-outline-primary">Select</a>
+                                    
+                                </div>
                                 
+                                {% else %}
                                 <div class="form-group col">
                                     <label><h3>{{case.petitioner}} v/s {{case.respondent}}</h3></label>
                                     
                                 </div>
+                                
                                 <div class="form-group col">
                                     <label><h6>Select Client ({{case.client_type}})</h6></label>
                                     <select class="form-control" name="client" id="client">
@@ -55,7 +71,7 @@
                                     <br>
                                     <button type="button" id="btn_add_more" class="btn btn-outline-primary">Add Client and add another</button>
                                     <button type="button" id="btn_add_close" class="btn btn-outline-secondary">Add Client and Close</button>
-                                    <button type="button" id="btn_skip" class="btn btn-outline-danger">Skip</button>
+                                    <a href="{% url 'adv_index' %}" type="button" id="btn_skip" class="btn btn-outline-danger">Skip</a>
                                 </div>
                                 
                             </div>
@@ -129,6 +145,7 @@
 
                             
                         </div>
+                        {% endif %}
                      </div>
                   </div>
                   
@@ -149,13 +166,19 @@
       <script src="{% static 'assets/js/script.js' %}"></script>
 
       <script>
+        function function_case(case_id){
+           
+            document.getElementById('btn_select').href = '/advocate/case_client_associate/'+case_id
+            
+        }
+        
         $(document).ready(function() {
             document.getElementById("btn_add_more").addEventListener("click", function(){
                 var client_id = $('#client').val()
                 var case_id = $('#case_id').val()
                 var url = "/advocate/associate_client_and_add_more/?client_id="+client_id+'&case_id='+case_id;
                 $.get(url, function(data, status){
-                    alert(data)
+                    
                     window.location.reload();
                 });
             });
@@ -165,13 +188,12 @@
                 var case_id = $('#case_id').val()
                 var url = "/advocate/associate_client_and_add_more/?client_id="+client_id+'&case_id='+case_id;
                 $.get(url, function(data, status){
-                    window.location.replace('adv-index')
+                    window.location.replace('/advocate/adv-index')
                 });
             });
 
-            document.getElementById("btn_skip").addEventListener("click", function(){
-                window.location.replace('adv-index')
-            });
+            
+            
         });
       </script>
       

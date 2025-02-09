@@ -52,7 +52,17 @@
       </div>
      
    </div>
- </div>  
+ </div>
+ 
+          <!-- Modal for Edit Client -->
+<div class="modal fade" id="editclient" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+   <div class="modal-dialog" id="editclient_obj">
+     
+       
+      
+     
+   </div>
+ </div>
 
  <!-- Modal for View Case Detail -->
 <div class="modal fade" id="casedetail" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -139,7 +149,7 @@
                       </li>
 
                       <li class="nav-item">
-                        <button type="button" class="btn btn-outline-danger">Associate with Case</button>
+                        <a href="/advocate/case_client_associate/0" type="button" class="btn btn-outline-danger">Associate with Case</a>
                       </li>
                       <form>
                       <li class="nav-item">
@@ -187,7 +197,7 @@
                                        <td class="text-center">{{client.address}}</td>
                                        <td class="text-center">{{client.count}}</td>   
                                        <td>
-                                          <button type="button" class="btn btn-outline-secondary">Edit</button>
+                                          <button type="button" onclick="function_editclient('{{client.id}}')" id="btn_editclient" class="btn btn-outline-secondary">Edit</button>
                                           <button type="button" onclick="function_viewcase('{{client.id}}')" class="btn btn-outline-primary">View Cases</button>
                                           <button value="/delete-client/{{client.id}}" type="button" onclick="function_delete_client(this.value)" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                        </td>
@@ -273,7 +283,18 @@
          document.getElementById('btn_delete').href = value
          $('#delete_client').modal("show");
       }
-    
+
+      function function_editclient(client_id){
+         var url = "/edit_client/?client_id="+client_id;
+         $.get(url, function(data, status){
+            $("#editclient_obj").html(data)
+            $('#editclient').modal("show");
+          
+         });
+         
+      }
+
+      
 
       
    $(document).ready(function() {
@@ -283,6 +304,9 @@
          $('#newclient').modal("show");
              
       });
+
+      
+      
 
       
   });

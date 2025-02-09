@@ -478,6 +478,7 @@ def DELINK_CASE(request, id, returnURL):
     return redirect(returnURL)
 
 @login_required(login_url = 'login')
+@transaction.atomic
 def DELETE_CLIENT(request, id):
     phone_number = request.user
     is_login_valid = check_login_validation(phone_number)
@@ -490,12 +491,11 @@ def DELETE_CLIENT(request, id):
         return redirect('profile')
 
     client_id = id
-    print(client_id)
     client_obj = Clients.objects.get(id = client_id)
     client_obj.is_deleted=True
     client_obj.save()
 
-    associate_case_obj = Associate_With_Client.objects.filter(id = client_obj)
+    associate_case_obj = Associate_With_Client.objects.filter(client = client_obj)
     for associate_case in associate_case_obj:
         associate_case.is_deleted=True
         associate_case.save()
@@ -685,10 +685,8 @@ def CASE_CLOSED_UPDATE(request):
     if is_first_login := is_first_time_login(phone_number):
         return redirect('profile')
 
-    print('1')
-
+    
     if request.method == 'POST':
-        print('2')
         case_id = request.POST.get('case_id')
         action = request.POST.get('action')
         comments = request.POST.get('comments')
@@ -714,6 +712,44 @@ def CASE_CLOSED_UPDATE(request):
         )
 
     return redirect('adv_index')
+
+
+@transaction.atomic
+@login_required(login_url = 'login')
+def EDIT_CLIENT(request):
+    client_id = request.GET.get('client_id')
+
+    client_obj = Clients.objects.get(id = client_id)
+    
+    return render(request, 'edit_client.html', locals())
+
+
+@transaction.atomic
+@login_required(login_url = 'login')
+def EDIT_CLIENT_UPDATE(request):
+    phone_number = request.user
+    is_login_valid = check_login_validation(phone_number)
+
+    if not is_login_valid:
+        return redirect('login')
+
+
+    if is_first_login := is_first_time_login(phone_number):
+        return redirect('profile')
+
+    if request.method == 'POST':
+        client_id = request.POST.get('client_id')
+        client_Name = request.POST.get('client_Name')
+        mobile = request.POST.get('mobile')
+        address = request.POST.get('address')
+        client_obj = Clients.objects.get(id = client_id)
+        client_obj.name = client_Name
+        client_obj.mobile = mobile
+        client_obj.address = address
+        client_obj.save()
+    
+    
+    return redirect('allclients')
 
     
 

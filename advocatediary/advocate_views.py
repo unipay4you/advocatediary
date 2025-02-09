@@ -197,7 +197,8 @@ def _extracted_from_NEWCASE(request, user):
     )
 
     request.session['case_obj'] = case_obj.id
-    return redirect('case_client_associate')
+    targetURL = f'/advocate/case_client_associate/{case_obj.id}'
+    return redirect(targetURL)
 
 
 @login_required(login_url = 'login')
@@ -278,9 +279,9 @@ def ALLCLIENTS(request):  # sourcery skip: avoid-builtin-shadow
     return render(request, 'advocate/allclients.html', context)
 
 @login_required(login_url = 'login')
-def Case_Client_Associate(request):
+def Case_Client_Associate(request, id):
     phone_number = request.user
-    case_obj = request.session.get('case_obj')
+    case_obj = id
     is_login_valid = check_login_validation(phone_number)
 
     if not is_login_valid:
@@ -292,23 +293,31 @@ def Case_Client_Associate(request):
     
     #get Advocate id from user login
     user = CustomUser.objects.get(phone_number = phone_number)
-    get_case = Case_Master.objects.get(id = case_obj)
+    get_case = '0'
+    
+    Associate_With_Client_obj = ''
+    if case_obj != '0':
+        get_case = Case_Master.objects.get(id = case_obj)
+        Associate_With_Client_obj = Associate_With_Client.objects.filter(case = case_obj)
+    else:
+        get_case = Case_Master.objects.filter(advocate = user)
+    
     client_all = Clients.objects.filter(advocate = user).order_by('name')
-    Associate_With_Client_obj = Associate_With_Client.objects.filter(case = case_obj)
-
+    
+    
     
     
     context = {
         'case' : get_case,
         'clients' : client_all,
-        'associate_with_client' : Associate_With_Client_obj
+        'associate_with_client' : Associate_With_Client_obj,
+        'case_obj' : case_obj
     }
     return render(request, 'advocate/case_client_associate.html', context)    
 
 @login_required(login_url = 'login')
 def associate_client_and_add_more(request):
     phone_number = request.user
-    case_obj = request.session.get('case_obj')
     is_login_valid = check_login_validation(phone_number)
 
     if not is_login_valid:
@@ -336,6 +345,7 @@ def associate_client_and_add_more(request):
         msg = 'Success'
 
     return HttpResponse(msg)  
+
 
 
 def Offcanvas_Body(request):

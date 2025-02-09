@@ -35,13 +35,15 @@ urlpatterns = [
     path('update_court', views.UPDATE_COURT, name='update_court'),
     path('case_closed/', views.CASE_CLOSED, name='case_closed'),
     path('case_closed_update', views.CASE_CLOSED_UPDATE, name='case_closed_update'),
+    path('edit_client/', views.EDIT_CLIENT, name='edit_client'),
+    path('edit_client_update', views.EDIT_CLIENT_UPDATE, name='edit_client_update'),
 
     #url for Advocate Login area
     path('advocate/adv-index', advocate_views.adv_index, name='adv_index'),
     path('advocate/newcase', advocate_views.NEWCASE, name='newcase'),
     path('advocate/case-edit/<id>', advocate_views.CASEEDIT, name='case_edit'),
     path('advocate/allclients', advocate_views.ALLCLIENTS, name='allclients'),
-    path('advocate/case_client_associate', advocate_views.Case_Client_Associate, name='case_client_associate'),
+    path('advocate/case_client_associate/<id>', advocate_views.Case_Client_Associate, name='case_client_associate'),
     path('advocate/associate_client_and_add_more/', advocate_views.associate_client_and_add_more, name='associate_client_and_add_more'),
     path('advocate/offcanvas_body/', advocate_views.Offcanvas_Body, name='offcanvas_body'),
     path('advocate/client_case_viewmodal/', advocate_views.Client_Case_view_Modal, name='client_case_view_modal'),

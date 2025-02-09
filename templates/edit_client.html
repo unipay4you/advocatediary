@@ -1,0 +1,32 @@
+<div class="modal-content">
+         
+    <div class="modal-header">
+       <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Client</h1>
+       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+       <div id="alert_danger">
+       </div>
+       <form method="post" action="{% url 'edit_client_update' %}"> 
+          {% csrf_token %}
+       <div class="form-group">
+        <input type="hidden" name="client_id" value="{{client_obj.id}}">
+          <input class="form-control" required name="client_Name" type="text" value="{{client_obj.name}}" placeholder="Client Name">
+       </div>
+       <div class="form-group">
+          <input class="form-control" name="mobile" maxlength="10" type="text" value="{{client_obj.mobile}}" placeholder="Mobile Number">
+       </div>
+       <div class="form-group">
+          <input class="form-control" name="address" type="text" value="{{client_obj.address}}" placeholder="Address">
+       </div>
+       <div class="form-group mb-0">
+          <button class="btn btn-primary btn-block" type="submit">Update</button>
+      </div>
+       </form>
+         
+    </div>
+    <div class="modal-footer">
+       
+    </div>
+ 
+ </div>

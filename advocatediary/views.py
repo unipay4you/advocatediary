@@ -161,6 +161,7 @@ def _extracted_from_REGISTER(request, phone_number, user_name, password, email):
     is_email_verified = False
     is_first_login = True
     otp = random.randint(100000, 999999)
+    otp = 123456 #defalt otp for testing
     user_id = generate_user_id()
     otp_msg = ''
     otp_created_at = datetime.datetime.now(datetime.timezone.utc)

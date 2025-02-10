@@ -1,1 +1,1 @@
-web: gunicorn advocatediary.wsgi --log-file -
+web: gunicorn advocatediary.wsgi --log-file =

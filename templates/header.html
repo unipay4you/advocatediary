@@ -3,10 +3,10 @@
 <div class="header">
    
     <div class="header-left">
-       <a href="index.html" class="logo">
+       <a href="{% url 'adv_index' %}" class="logo">
        <img src="{% static 'assets/img/logo.png' %}" alt="Logo">
        </a>
-       <a href="index.html" class="logo logo-small">
+       <a href="{% url 'adv_index' %}" class="logo logo-small">
        <img src="{% static 'assets/img/logo-small.png' %}" alt="Logo" width="30" height="30">
        </a>
     </div>
@@ -108,7 +108,7 @@
                 </div>
              </div>
              <a class="dropdown-item" href="{% url 'profile' %}">My Profile</a>
-             <a class="dropdown-item" href="inbox.html">Inbox</a>
+             <a class="dropdown-item" href="#">Inbox</a>
              <a class="dropdown-item" href="{% url 'logout_page'%}">Logout</a>
           </div>
        </li>

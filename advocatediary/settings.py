@@ -17,6 +17,7 @@ DEBUG = True
 
 
 ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = ["*"]
 
 AUTH_USER_MODEL = 'v1.CustomUser'
 

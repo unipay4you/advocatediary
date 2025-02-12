@@ -17,7 +17,7 @@ DEBUG = True
 
 
 ALLOWED_HOSTS = ["*"]
-CSRF_TRUSTED_ORIGINS = ["*"]
+CSRF_TRUSTED_ORIGINS = ["https://mylegaldiary.in"]
 
 AUTH_USER_MODEL = 'v1.CustomUser'
 

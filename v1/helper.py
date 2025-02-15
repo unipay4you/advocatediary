@@ -84,7 +84,7 @@ def send_mail_token(email, email_token):
     try:
         address = [email,]
         subject = 'Your Account need to be verified'
-        message = f'Click on the link to verify your email http://127.0.0.1:8000/verify/{email_token}'
+        message = f'Click on the link to verify your email https://mylegaldiary.in/verify/{email_token}'
         obj = send_mail(subject, message, settings.EMAIL_HOST_USER, address)
         print('Mail send successfull')
     

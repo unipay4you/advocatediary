@@ -109,8 +109,8 @@ def NEWCASE(request):
 
     states = State.objects.all()
     court_type = Court_Type.objects.all()
-    case_type = Case_Type.objects.all()
-    case_stage = Case_Stage.objects.all()
+    case_type = Case_Type.objects.all().order_by('case_type')
+    case_stage = Case_Stage.objects.all().order_by('stage_of_case')
 
     user = CustomUser.objects.get(phone_number = phone_number)
 

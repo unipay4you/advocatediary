@@ -193,7 +193,9 @@ def _extracted_from_NEWCASE(request, user):
         case = case_obj,
         last_date = case_obj.last_date,
         next_date = case_obj.next_date,
-        particular = case_obj.comments
+        particular = case_obj.comments,
+        stage_of_case = case_obj.stage_of_case,
+
     )
 
     request.session['case_obj'] = case_obj.id

@@ -62,6 +62,12 @@ stage_of_case = (
     )
 )
 
+court_type = (
+    (
+        'District Court'
+    )
+)
+
 def update_master():
     for item in case_type:
         Case_Type.objects.create(case_type = item)

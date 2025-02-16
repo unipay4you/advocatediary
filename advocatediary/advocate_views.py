@@ -194,7 +194,7 @@ def _extracted_from_NEWCASE(request, user):
         last_date = case_obj.last_date,
         next_date = case_obj.next_date,
         particular = case_obj.comments,
-        stage_of_case = case_obj.stage_of_case,
+        stage = case_obj.stage_of_case,
 
     )
 

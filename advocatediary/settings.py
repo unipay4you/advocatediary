@@ -31,6 +31,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'dbbackup',
     'v1',
 ]
 
@@ -131,3 +133,15 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'unipay4you@gmail.com'
 EMAIL_HOST_PASSWORD = 'naor ylgh thuz xvwp'
+
+STORAGES = {
+    "dbbackup": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "OPTIONS": {
+            "location": BASE_DIR  / 'dbbackup',
+        },
+    },
+    "staticfiles": {
+        'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    },
+}

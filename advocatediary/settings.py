@@ -136,9 +136,10 @@ EMAIL_HOST_PASSWORD = 'naor ylgh thuz xvwp'
 
 STORAGES = {
     "dbbackup": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "BACKEND": "storages.backends.ftp.FTPStorage",
         "OPTIONS": {
-            "location": BASE_DIR  / 'dbbackup',
+            'location': 'ftp://dharm:dharm@192.168.1.5:21'
+            
         },
     },
     "staticfiles": {

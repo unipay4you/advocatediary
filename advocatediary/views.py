@@ -15,6 +15,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.db import transaction
+import logging
+
+logger = logging.getLogger(__name__)
+logger = logging.getLogger('django')
 
 
 

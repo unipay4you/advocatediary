@@ -4,8 +4,6 @@ from django_apscheduler.models import DjangoJobExecution
 from django_apscheduler import util
 from django.core.management import call_command
 
-
-
 def daily_db_backup():
     print('Database backed up')
     call_command('dbbackup', clean=True)

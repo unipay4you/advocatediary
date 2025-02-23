@@ -8,7 +8,7 @@ from advocatediary.scheduler import scheduler
 
 
 urlpatterns = [
-    path('', include('api.urls')),
+   
     path('admin/', admin.site.urls),
 
     path('base', views.base, name='base'),

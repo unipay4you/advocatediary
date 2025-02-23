@@ -75,5 +75,4 @@ def update_master():
     for item in stage_of_case:
         Case_Stage.objects.create(stage_of_case = item)
 
-    for item in court_type:
-        Court_Type.objects.create(court_type = item) 
+    

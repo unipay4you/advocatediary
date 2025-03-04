@@ -228,3 +228,7 @@ def add_new_court(request):
     return render(request, 'add_new_court.html', context)
 
 
+def save_pdf(params:dict):
+    pass
+
+

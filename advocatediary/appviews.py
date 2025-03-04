@@ -17,6 +17,7 @@ from django.core.validators import validate_email
 from django.db import transaction
 import logging
 
+
 logger = logging.getLogger(__name__)
 logger = logging.getLogger('django')
 

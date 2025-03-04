@@ -25,7 +25,7 @@ def adv_index(request):
     if is_first_login := is_first_time_login(phone_number):
         return redirect('profile')
     
-    all_case = Case_Master.objects.filter(advocate = phone_number, is_active = True).order_by('court_no')
+    all_case = Case_Master.objects.filter(advocate = phone_number, is_active = True).order_by('next_date')
     
     list_filter = 'today' #defalt for display today list
     if request.GET.get('filter'):

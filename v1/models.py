@@ -76,7 +76,7 @@ class CustomUser(AbstractUser):
         ('staff', 'staff'),
     )
     user_id = models.OneToOneField(User_ID, on_delete=models.CASCADE, blank=True, null=True)
-    user_type = models.CharField(max_length=10, choices=user_type_choices, default='admin')
+    user_type = models.CharField(max_length=10, choices=user_type_choices, default='advocate')
     user_name = models.CharField(max_length=100, blank=True, null=True)
     user_dob = models.DateField(blank=True,null=True)
     user_address1 = models.CharField(max_length=100, blank=True, null=True)
@@ -103,7 +103,7 @@ class CustomUser(AbstractUser):
         
 
 class user_login_details(BaseModel):
-    user_id = models.OneToOneField(User_ID, on_delete=models.CASCADE, related_name='user_login_details')
+    user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_login_details')
     login_ip = models.GenericIPAddressField()
     login_device = models.CharField(max_length=100)
     login_location = models.CharField(max_length=100)

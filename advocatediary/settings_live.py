@@ -8,6 +8,7 @@ DATABASES = {
     }
 }
 
+CSRF_TRUSTED_ORIGINS = ["https://mylegaldiary.in"]
 
 STATIC_URL = '/static/'
 

@@ -22,8 +22,12 @@ else:
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
-DBBACKUP_STORAGE = 'storages.backends.ftp.FTPStorage'
-DBBACKUP_STORAGE_OPTIONS = {'location': 'ftp://dharm:dharm@192.168.1.5:21/'}
+
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
+DBBACKUP_STORAGE_OPTIONS = {'location': BASE_DIR / 'backup/'}
+
+#DBBACKUP_STORAGE = 'storages.backends.ftp.FTPStorage'
+#DBBACKUP_STORAGE_OPTIONS = {'location': 'ftp://dharm:dharm@192.168.1.5:21/'}
 DBBACKUP_CLEANUP_KEEP = 2
 
 

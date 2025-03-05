@@ -16,7 +16,7 @@ def delete_old_job_executions(max_age = 604_800): # max age in seconds
 def  start():
     scheduler = BackgroundScheduler()
     scheduler.add_jobstore(DjangoJobStore(), 'default')
-    scheduler.add_job(daily_db_backup, 'interval', hours=3,
+    scheduler.add_job(daily_db_backup, 'interval', hours=1,
                       jobstore='default',
                       id='daily_db_backup',
                       replace_existing=True)

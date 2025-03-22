@@ -5,6 +5,19 @@ from uuid import uuid4
 from datetime import datetime, timezone
 
 
+
+class StateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = State
+        fields = '__all__'
+        
+class DistrictSerializer(serializers.ModelSerializer):
+    state = StateSerializer()
+    class Meta:
+        model = District    
+        fields = '__all__'
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser    
@@ -72,7 +85,47 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
 
+class ProfileSerializer(serializers.ModelSerializer):
+    user_state = StateSerializer()
+    user_district = DistrictSerializer()
+    class Meta:
+        model = CustomUser
+        fields = ["id","phone_number","user_profile_image","email","user_type","user_name","user_dob","user_address1",
+                  "user_address2","user_address3","user_district_pincode","advocate_registration_number","user_under_which_advocate",
+                  "is_phone_number_verified","is_email_verified","is_first_login","user_state","user_district"]
 
+
+
+class AdvocateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ["id","phone_number","user_name"]
+
+
+class StageOfCaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Case_Stage   
+        fields = '__all__'
+        #["id","is_deleted", "crn","case_no","case_year","state","district","court_type","court_name",
+         #         "court_no","under_section","petitioner","respondent","client_type","fir_number","fir_year",
+          #        "police_station","first_date","last_date","next_date","sub_advocate","comments","document","is_desided","is_active","case_type","stage_of_case","advocate"]
+
+
+class CaseTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Case_Type  
+        fields = '__all__'
+
+
+
+class CaseSerializer(serializers.ModelSerializer):
+    advocate = AdvocateSerializer()
+    stage_of_case = StageOfCaseSerializer()
+    case_type = CaseTypeSerializer()
+    class Meta:
+        model = Case_Master
+        fields = ["id","crn","case_no","case_year","court_type","court_name","court_no","under_section","petitioner","respondent",
+                  "client_type","last_date","next_date","sub_advocate","comments","case_type","stage_of_case","advocate"]
 
 
 
@@ -116,33 +169,16 @@ class CourtSerializer(serializers.ModelSerializer):
         model = Court
         fields = '__all__'
 
-class CaseSerializer(serializers.ModelSerializer):
-    #advocate = UserSerializer()
-    class Meta:
-        model = CustomUser
-        fields = '__all__'
 
 
-class StateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = State
-        fields = '__all__'
 
 
-class DistrictSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = District    
-        fields = '__all__'
 
 
-class case_typeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Case_Type  
-        fields = '__all__'
 
 
-class stage_of_caseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Case_Stage   
-        fields = '__all__'
+
+
+
+
 

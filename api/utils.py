@@ -18,9 +18,10 @@ def send_email_token(email, email_token):
     try:
         address = [email,]
         subject = 'Your Account need to be verified'
-        message = f'Click on the link to verify your email {settings.HOST_URL}/api/verify/{email_token}'
+        message = f'Click on the link to verify your email {settings.HOST_URL}/verify/{email_token}'
         obj = send_mail(subject, message, settings.EMAIL_HOST_USER, address)
         print('Mail send successfull')
+        
     
     except Exception as e:
         print(e) 

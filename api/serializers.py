@@ -85,6 +85,8 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
 
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     user_state = StateSerializer()
     user_district = DistrictSerializer()

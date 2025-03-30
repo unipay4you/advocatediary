@@ -56,15 +56,16 @@ urlpatterns = [
 
     #url for API
     path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/register', api_views.RegisterUser.as_view()),
-    path('api/otp-verify', api_views.verifyOTP.as_view()),
-    path('api/otp-resend', api_views.resendOTP.as_view()),
-    path('api/email-resend', api_views.resendEmail.as_view()),
-    path('api/changeemail', api_views.ChangeEmail.as_view()),
-    path('api/login', api_views.Login.as_view()),
-    path('api/getdistrict', api_views.getDistrict.as_view()),
-    path('api/user', api_views.CaseView.as_view()),
-    #path('api/user', api_views.UserView.as_view()),
+    path('api/register/', api_views.RegisterUser.as_view()),
+    path('api/otp-verify/', api_views.verifyOTP.as_view()),
+    path('api/otp-resend/', api_views.resendOTP.as_view()),
+    path('api/email-resend/', api_views.resendEmail.as_view()),
+    path('api/changeemail/', api_views.ChangeEmail.as_view()),
+    path('api/login/', api_views.Login.as_view()),
+    path('api/getdistrict/', api_views.getDistrict.as_view()),
+    path('api/user/', api_views.CaseView.as_view()),
+    path('api/user/update/', api_views.UpdateUser.as_view()),
+    
     
     
     

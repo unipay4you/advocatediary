@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, time, datetime, date
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
@@ -16,6 +16,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import generics
 from api.utils import *
 from uuid import uuid4
+from django.db import transaction
+from django.db.models import Max,Min,Q, Count
 
 
 
@@ -261,6 +263,71 @@ class Login(APIView):
             return Response({'status' : 404,'message' : 'Something went wrong'})
         
 
+class StageOfCase(generics.ListAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    queryset = Case_Stage.objects.all()
+    serializer_class = StageOfCaseSerializer
+        
+
+
+
+class DateUpdateCase(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    
+    def post(self, request):
+        try:
+            user = request.user
+            case_id = request.data['id']
+            next_date = request.data['next_date']
+            stage = request.data['stage']
+            comments = request.data['comments']
+
+            print(case_id)
+            print(next_date)
+            print(stage)
+            print(comments)
+
+
+            case_obj = Case_Master.objects.get(id = case_id)
+            last_date_previous = case_obj.last_date
+            next_date = datetime.strptime(next_date, "%Y-%m-%d").date()
+            print(next_date)
+            print(last_date_previous)
+
+            if next_date < last_date_previous:
+                print("1")
+                last_date_updated = last_date_previous
+            else:
+                print("2")
+                last_date_updated = case_obj.next_date
+
+
+            case_stage_obj = Case_Stage.objects.get(id = stage)
+            stage_name = case_stage_obj.stage_of_case
+
+            case_history_obj = CaseHistory.objects.create(
+                case = case_obj,
+                last_date = last_date_updated,
+                next_date = next_date,
+                particular = comments,
+                stage = stage_name
+            )
+
+            case_obj.last_date = last_date_updated
+            case_obj.next_date = next_date
+            case_obj.stage_of_case = case_stage_obj
+            case_obj.save()
+
+            return Response({'status' : 200, 'message' : "Date Updated"})
+        except Exception as e:
+            print(e)
+            return Response({'status' : 404,'message' : 'Something went wrong'})
+
+
 
 class CaseView(APIView):
     authentication_classes = [JWTAuthentication]
@@ -277,16 +344,18 @@ class CaseView(APIView):
             userserializer = ProfileSerializer(user_obj, many=True)
 
             total_case = len(case_obj)
-            today_cases = len(case_obj.filter(next_date = datetime.now().date()))
+            today_cases = len(case_obj.filter(next_date = datetime.now().date())) + len(case_obj.filter(last_date = datetime.now().date()))
             tommarow_cases  = len(case_obj.filter(next_date = datetime.now().date()+timedelta(1)))
             date_awaited_case = len(case_obj.filter(next_date__lt = datetime.now().date()))
 
             print(total_case)
             print(today_cases)
-            print(today_cases)
+            
             print(tommarow_cases)
             print(date_awaited_case)
-
+            case_obj_today = case_obj.filter(next_date = datetime.now().date())
+            caseserializer = CaseSerializer(case_obj_today, many=True)
+            
             return Response({'status' : 200, 
                              'userData': userserializer.data, 
                              'cases' : caseserializer.data, 
@@ -302,6 +371,45 @@ class CaseView(APIView):
 
 
 
+class CaseViewFiltered(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    
+    def post(self, request):
+        try:
+            user = request.user
+            case_filter = request.data['filter']
+            print(case_filter)
+            case_obj = Case_Master.objects.filter(advocate = user)
+        
+            if case_filter == 'today':
+                cases_list = case_obj.filter(
+                    Q(next_date = datetime.now().date()) |
+                    Q(last_date = datetime.now().date())
+                    )
+                
+            elif case_filter == 'tommarow':
+                cases_list = case_obj.filter(next_date = datetime.now().date()+timedelta(1))
+            elif case_filter == 'date_awaited':
+                cases_list = case_obj.filter(next_date__lt = datetime.now().date())
+            else: #All cases
+                cases_list = case_obj.filter(is_active = True)
+
+            print(len(cases_list))
+            
+            caseserializer = CaseSerializer(cases_list, many=True)
+            
+            
+            return Response({'status' : 200, 
+                             'cases' : caseserializer.data, 
+                             })
+        
+        except Exception as e:
+            print(e)
+            return Response({'status' : 404,'message' : 'Something went wrong'})
+
+
 class UserView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -311,7 +419,24 @@ class UserView(APIView):
         user_obj = CustomUser.objects.filter(phone_number = user)
         serializer = ProfileSerializer(user_obj, many=True)
         return Response({'status' : 200, 'payload' : serializer.data})
-
+    
+class CaseHistoryView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        try:
+            user = request.user
+            case_id = request.data['id']
+            case_history_obj = CaseHistory.objects.filter(case = case_id)
+            serializer = CaseHistorySerializer(case_history_obj, many=True)
+            print(case_id)
+            print(serializer.data)
+            return Response({'status' : 200, 'payload' : serializer.data})
+        
+        except Exception as e:
+            print(e)
+            return Response({'status' : 404,'message' : 'Something went wrong'})
 
 class getDistrict(generics.ListAPIView):
     authentication_classes = [JWTAuthentication]

@@ -65,6 +65,12 @@ urlpatterns = [
     path('api/getdistrict/', api_views.getDistrict.as_view()),
     path('api/user/', api_views.CaseView.as_view()),
     path('api/user/update/', api_views.UpdateUser.as_view()),
+    path('api/case/stage/', api_views.StageOfCase.as_view()),
+    path('api/case/history/', api_views.CaseHistoryView.as_view()),
+    path('api/case/filter/', api_views.CaseViewFiltered.as_view()),
+
+    path('api/case/dateupdate/', api_views.DateUpdateCase.as_view()),
+
     
     
     

@@ -205,6 +205,19 @@ class CourtTransfer(BaseModel):
     new_court = models.CharField(max_length=50, blank=True,null=True)
 
 
+class Case_Document(BaseModel):
+    case = models.ForeignKey(Case_Master,on_delete=models.CASCADE)
+    document = models.FileField(upload_to='media/casefiles', blank=True, null=True)
+    document_name = models.CharField(max_length=50, blank=True,null=True)
+    document_description = models.TextField(max_length=50, blank=True,null=True)
+    document_date = models.DateField(auto_now_add=True)
+    document_uploaded_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return self.document_name
+
+
+
 
 
 

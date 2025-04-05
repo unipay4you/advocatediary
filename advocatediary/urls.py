@@ -63,11 +63,15 @@ urlpatterns = [
     path('api/changeemail/', api_views.ChangeEmail.as_view()),
     path('api/login/', api_views.Login.as_view()),
     path('api/getdistrict/', api_views.getDistrict.as_view()),
+    path('api/getcourt/', api_views.getCourt.as_view()),
+    path('api/getcourttype/', api_views.getCourtType.as_view()),
+    path('api/getcasetype/', api_views.getCaseType.as_view()),
     path('api/user/', api_views.CaseView.as_view()),
     path('api/user/update/', api_views.UpdateUser.as_view()),
     path('api/case/stage/', api_views.StageOfCase.as_view()),
     path('api/case/history/', api_views.CaseHistoryView.as_view()),
     path('api/case/filter/', api_views.CaseViewFiltered.as_view()),
+    path('api/case/add/', api_views.CaseAdd.as_view()),
 
     path('api/case/dateupdate/', api_views.DateUpdateCase.as_view()),
 

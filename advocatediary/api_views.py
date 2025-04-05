@@ -53,6 +53,7 @@ class UpdateUser(APIView):
             print(request.data)
 
             request_id = request.data['id']
+            print(request_id)
             user_profile_image = request.data['user_profile_image']
             phone_number = str(request.data['phone_number'])
             email = request.data['email']
@@ -267,7 +268,7 @@ class StageOfCase(generics.ListAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
-    queryset = Case_Stage.objects.all()
+    queryset = Case_Stage.objects.all().order_by('stage_of_case')
     serializer_class = StageOfCaseSerializer
         
 
@@ -448,6 +449,186 @@ class getDistrict(generics.ListAPIView):
 
 
 
+class CaseAdd(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            user = request.user
+
+            cnr = request.data['cnr']
+            case_no = request.data['case_no']
+            year = request.data['year']
+            
+            state_id = request.data['state_id']
+            state_name = State.objects.get(id = state_id)
+            
+            district_id = request.data['district_id']
+            district_name = District.objects.get(id = district_id)
+
+            court_type_id = request.data['court_type_id']
+            print(court_type_id)
+            court_type = Court_Type.objects.get(id = court_type_id)
+            
+            court_id = request.data['court_id']
+            court_name_obj = Court.objects.get(id = court_id)
+            court_name = court_name_obj.court_name
+            court_no = court_name_obj.court_no
+            
+            case_type_id = request.data['case_type_id']
+            case_type = Case_Type.objects.get(id = case_type_id)
+            
+            under_section = request.data['under_section'].upper()
+            petitioner = request.data['petitioner'].upper()
+            respondent = request.data['respondent'].upper()
+            client_type = request.data['client_type']  #1 For Petitioner #2 for Respondent
+            
+            case_stage_id = request.data['case_stage_id']
+            case_stage = Case_Stage.objects.get(id = case_stage_id)
+            
+            first_date = request.data['first_date']
+            next_date = request.data['next_date']
+
+            fir_no = request.data['fir_no']
+            fir_year = request.data['fir_year']
+            police_station = request.data['police_station']
+            sub_advocate = request.data['sub_advocate']
+            comments = request.data['comments']
+            document = request.data['document']
+            
+            case_obj = Case_Master.objects.create(
+                crn = cnr,
+                case_no = case_no,
+                case_year = year,
+                state = state_name,
+                district = district_name,
+                court_type = court_type,
+                court_name = court_name,
+                court_no = court_no,
+                case_type = case_type,
+                under_section = under_section,
+                petitioner = petitioner,
+                respondent = respondent,
+                client_type = client_type,
+                stage_of_case = case_stage,
+                fir_number = fir_no,
+                fir_year = fir_year,
+                police_station = police_station,
+
+                first_date = datetime.strptime(first_date, '%Y-%m-%d').date(),
+
+                last_date = first_date,
+                next_date = datetime.strptime(next_date, '%Y-%m-%d').date(),
+                advocate = user,
+                sub_advocate = sub_advocate,
+                comments = comments,
+                document = document,
+                
+            )
+
+
+            #add data in case history modale
+            print("2")
+            casehistoryObj = CaseHistory.objects.create(
+                case = case_obj,
+                last_date = case_obj.last_date,
+                next_date = case_obj.next_date,
+                particular = case_obj.comments,
+                stage = case_obj.stage_of_case,
+
+            )
+
+            print("3")
+            if document != "":
+
+                casedocument_obj = Case_Document.objects.create(
+                    case = case_obj,
+                    document = document,
+                    document_name = "Case_Document",
+                    document_description = "",
+                    document_date = datetime.now().date(),
+                    document_uploaded_by = case_obj.advocate
+                )
+
+            print(request.data)
+
+            return Response({'status' : 200,'message' : 'Case Add Successfully'})
+
+        except Exception as e:
+            print(e)
+            return Response({'status' : 404,'message' : 'Something went wrong'})
+    
+
+    
+
+    
+
+    #request.session['case_obj'] = case_obj.id
+    #targetURL = f'/advocate/case_client_associate/{case_obj.id}'
+    #return redirect(targetURL)
+
+    
+    #first_date = request.POST.get('first_date')
+    #next_date = request.POST.get('next_date')
+    #is_valid_data = True
+    #if (next_date or first_date) and next_date < first_date:
+    #    messages.error(request, 'Next Date should be same or grater from First date')
+    #    is_valid_data = False        
+
+    #end_year = datetime.now().year
+    #year_rage = range(1970, end_year + 1)
+
+    #states = State.objects.all()
+    #court_type = Court_Type.objects.all()
+    #case_type = Case_Type.objects.all().order_by('case_type')
+    #case_stage = Case_Stage.objects.all().order_by('stage_of_case')
+
+    #user = CustomUser.objects.get(phone_number = phone_number)
+
+    #if is_valid_data and request.method == 'POST':
+    #    return _extracted_from_NEWCASE(request, user)
+
+
+    
+
+class getCourtType(generics.ListAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    queryset = Court_Type.objects.all()
+    serializer_class = CourtTypeSerializer
+
+class getCaseType(generics.ListAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    queryset = Case_Type.objects.all().order_by('case_type')
+    serializer_class = CaseTypeSerializer
+
+class getCourt(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            district_id = request.data['district_id']
+            print(district_id)
+            court_obj = Court.objects.filter(district = district_id)
+            print(court_obj)
+            if not court_obj.exists():
+                return Response({'status' : 404, 'message' : 'Court not exist'})
+            serializer = CourtSerializer(court_obj, many=True)
+            
+            print(serializer.data)
+            return Response({'status' : 200, 'payload' : serializer.data})
+        
+        except Exception as e:
+            print(e)
+            return Response({'status' : 404,'message' : 'Something went wrong'})
+        
+        
+
 
 
 
@@ -516,17 +697,4 @@ class Case_API(APIView):
 
 
 
-    
-
-@api_view(['POST'])
-def Court(request):
-    data = request.data
-    serializer = CourtSerializer(data = data)
-
-    if not serializer.is_valid():
-        print(serializer.errors)
-        return Response({'status' : 403, 'error': serializer.errors, 'message' : 'Something went wrong'})    
-
-    serializer.save()
-    
-    return Response({'status' : 200, 'payload' : serializer.data})
+  

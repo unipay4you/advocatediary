@@ -23,5 +23,6 @@ admin.site.register(Case_Master)
 admin.site.register(Associate_With_Client)
 admin.site.register(CaseHistory)
 admin.site.register(CourtTransfer)
+admin.site.register(Case_Document)
 
 

@@ -136,43 +136,49 @@ class CaseHistorySerializer(serializers.ModelSerializer):
         model = CaseHistory  
         fields = '__all__'
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+class CourtTypeSerializer(serializers.ModelSerializer):
     
+    class Meta:
+        model = Court_Type
+        fields = '__all__'
 
 class CourtSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Court
         fields = '__all__'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
 
 
 

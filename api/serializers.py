@@ -130,6 +130,14 @@ class CaseSerializer(serializers.ModelSerializer):
                   "client_type","last_date","next_date","sub_advocate","comments","case_type","stage_of_case","advocate"]
 
 
+class CaseByIDSerializer(serializers.ModelSerializer):
+    advocate = AdvocateSerializer()
+    stage_of_case = StageOfCaseSerializer()
+    case_type = CaseTypeSerializer()
+    class Meta:
+        model = Case_Master
+        fields = '__all__'
+
 
 class CaseHistorySerializer(serializers.ModelSerializer):
     class Meta:

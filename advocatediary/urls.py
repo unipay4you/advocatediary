@@ -72,6 +72,10 @@ urlpatterns = [
     path('api/case/history/', api_views.CaseHistoryView.as_view()),
     path('api/case/filter/', api_views.CaseViewFiltered.as_view()),
     path('api/case/add/', api_views.CaseAdd.as_view()),
+    path('api/case/edit/', api_views.CaseEdit.as_view()),
+    path('api/case/partialedit/', api_views.CaseEditPartial.as_view()),
+    path('api/case/detail/', api_views.CaseViewDetailByID.as_view()),
+    path('api/case/calenderdetail/', api_views.CaseViewDetailCalander.as_view()),
 
     path('api/case/dateupdate/', api_views.DateUpdateCase.as_view()),
 

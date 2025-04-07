@@ -146,9 +146,7 @@ class resendOTP(APIView):
     def post(self, request):
         try:
             user = str(request.user)
-            if user != request.data['phone_number']:
-                return Response({'status' : 401, 'message' : 'Requested token does not match with user'})
-
+            
             user_obj = CustomUser.objects.get(phone_number = user)
             
             time_diff = (datetime.now(timezone.utc) - user_obj.otp_created_at).total_seconds()
@@ -160,7 +158,8 @@ class resendOTP(APIView):
             otp = random.randint(100001, 999999)
             otp = 123456
             user_obj.otp = otp
-            
+            otp_msg = f'Hi, {user} Welcome back. Your Login OTP is {otp}'
+            send_msg_to_mobile(user, otp, otp_msg)
             user_obj.otp_created_at = datetime.now(timezone.utc)
             
             user_obj.save()
@@ -183,7 +182,7 @@ class resendEmail(APIView):
             user_obj = CustomUser.objects.get(phone_number = user)
             
             email_token = uuid4()
-            
+            print(email_token)
             user_obj.email_token = email_token
             user_obj.email_token_created_at = datetime.now(timezone.utc)
             user_obj.save()
@@ -382,7 +381,7 @@ class CaseViewFiltered(APIView):
             user = request.user
             case_filter = request.data['filter']
             print(case_filter)
-            case_obj = Case_Master.objects.filter(advocate = user)
+            case_obj = Case_Master.objects.filter(advocate = user, is_active = True)
         
             if case_filter == 'today':
                 cases_list = case_obj.filter(
@@ -560,34 +559,188 @@ class CaseAdd(APIView):
             return Response({'status' : 404,'message' : 'Something went wrong'})
     
 
+class CaseEdit(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            user = request.user
+            case_id = request.data['id']
+            
+            cnr = request.data['cnr']
+            case_no = request.data['case_no']
+            year = request.data['year']
+            state_id = request.data['state_id']
+            state_name = str(State.objects.get(id = state_id))
+            district_id = request.data['district_id']
+            district_name = str(District.objects.get(id = district_id))
+            court_type_id = request.data['court_type_id']
+            court_type = str(Court_Type.objects.get(id = court_type_id))
+            
+            court_id = request.data['court_id']
+            court_name_obj = Court.objects.get(id = court_id)
+            court_name = court_name_obj.court_name
+            court_no = court_name_obj.court_no
+            case_type_id = request.data['case_type_id']
+            case_type = Case_Type.objects.get(id = case_type_id)
+            under_section = request.data['under_section']
+            petitioner = request.data['petitioner'].upper()
+            respondent = request.data['respondent'].upper()
+            client_type = request.data['client_type']  #1 For Petitioner #2 for Respondent
+            case_stage_id = request.data['case_stage_id']
+            case_stage = Case_Stage.objects.get(id = case_stage_id)
+            next_date = request.data['next_date']
+            fir_no = request.data['fir_no']
+            fir_year = request.data['fir_year']
+            police_station = request.data['police_station']
+            sub_advocate = request.data['sub_advocate']
+            comments = request.data['comments']
+            
+            is_case_desided = request.data['is_desided']
+
+            case_obj = Case_Master.objects.get(id = case_id)
+            case_obj.crn = cnr
+            case_obj.case_no = case_no
+            case_obj.case_year = year
+            case_obj.state = state_name
+            case_obj.district = district_name
+            case_obj.court_type = court_type
+            case_obj.court_name = court_name
+            case_obj.court_no = court_no
+            case_obj.case_type = case_type
+            case_obj.under_section = under_section
+            case_obj.petitioner = petitioner
+            case_obj.respondent = respondent
+            case_obj.client_type = client_type
+            case_obj.stage_of_case = case_stage
+            case_obj.fir_number = fir_no
+            case_obj.fir_year = fir_year
+            case_obj.police_station = police_station
+            case_obj.next_date = datetime.strptime(next_date, '%Y-%m-%d').date()
+            
+            print(is_case_desided)
+            if is_case_desided == True:
+                case_obj.last_date = case_obj.next_date
+                case_obj.next_date = datetime.now().date()
+                case_obj.is_desided = True
+                case_obj.is_active = False
+
+            case_obj.sub_advocate = sub_advocate
+            
+            case_obj.save()
+            #add data in case history modale
+            print("2")
+            if is_case_desided == True:
+                print("2.1")
+                casehistoryObj = CaseHistory.objects.create(
+                    case = case_obj,
+                    last_date = case_obj.last_date,
+                    next_date = case_obj.next_date,
+                    particular = comments,
+                    stage = case_obj.stage_of_case,
+
+                )
+            
+
+            print(request.data)
+
+            return Response({'status' : 200,'message' : 'Case Edit Successfully'})
+
+        except Exception as e:
+            print(e)
+            return Response({'status' : 404,'message' : 'Something went wrong'})
     
+class CaseEditPartial(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
+    def post(self, request):
+        try:
+            user = request.user
+            print(request.data)
+            case_id = request.data['id']
+            comments = request.data['comments']
+            
+            is_case_desided = request.data['is_desided']
+
+            case_obj = Case_Master.objects.get(id = case_id)
+            
+            print(is_case_desided)
+            if is_case_desided == True:
+                case_obj.last_date = case_obj.next_date
+                case_obj.next_date = datetime.now().date()
+                case_obj.is_desided = True
+                case_obj.is_active = False
+                case_obj.save()
+            #add data in case history modale
+            print("2")
+            
+            if is_case_desided == True:
+                print("2.1")
+                casehistoryObj = CaseHistory.objects.create(
+                    case = case_obj,
+                    last_date = case_obj.last_date,
+                    next_date = case_obj.next_date,
+                    particular = comments,
+                    stage = case_obj.stage_of_case,
+
+                )
+            
+
+            print(request.data)
+
+            return Response({'status' : 200,'message' : 'Case Edit Successfully'})
+
+        except Exception as e:
+            print(e)
+            return Response({'status' : 404,'message' : 'Something went wrong'})
+
+
+
+
+class CaseViewDetailByID(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            print(request.data)
+            case_obj = Case_Master.objects.get(id = request.data['id'])
+            caseserializer = CaseByIDSerializer(case_obj)
+            
+            
+            return Response({'status' : 200, 
+                             'cases' : caseserializer.data, 
+                             })
+        
+        except Exception as e:
+            print(e)
+            return Response({'status' : 404,'message' : 'Something went wrong'})
+        
     
+class CaseViewDetailCalander(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
-    #request.session['case_obj'] = case_obj.id
-    #targetURL = f'/advocate/case_client_associate/{case_obj.id}'
-    #return redirect(targetURL)
-
-    
-    #first_date = request.POST.get('first_date')
-    #next_date = request.POST.get('next_date')
-    #is_valid_data = True
-    #if (next_date or first_date) and next_date < first_date:
-    #    messages.error(request, 'Next Date should be same or grater from First date')
-    #    is_valid_data = False        
-
-    #end_year = datetime.now().year
-    #year_rage = range(1970, end_year + 1)
-
-    #states = State.objects.all()
-    #court_type = Court_Type.objects.all()
-    #case_type = Case_Type.objects.all().order_by('case_type')
-    #case_stage = Case_Stage.objects.all().order_by('stage_of_case')
-
-    #user = CustomUser.objects.get(phone_number = phone_number)
-
-    #if is_valid_data and request.method == 'POST':
-    #    return _extracted_from_NEWCASE(request, user)
+    def post(self, request):
+        try:
+            
+            user = request.user
+            print(user)
+            req_month = request.data['req_month']
+            req_year = request.data['req_year']
+            case_obj = CaseHistory.objects.filter(last_date__month = req_month, last_date__year = req_year, case__advocate = user).order_by('last_date')
+            casehistoryserializer = CaseHistorySerializer(case_obj, many=True)
+            print(case_obj)
+            
+            return Response({'status' : 200, 
+                             'cases' : casehistoryserializer.data, 
+                             })
+        
+        except Exception as e:
+            print(e)
+            return Response({'status' : 404,'message' : 'Something went wrong'})
 
 
     

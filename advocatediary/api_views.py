@@ -138,6 +138,34 @@ class verifyOTP(APIView):
             print(e)
             return Response({'status' : 404,'message' : 'Something went wrong'}) 
     
+class verifyOTPChangepwd(APIView):
+    def post(self, request):
+        try:
+            phone_number = str(request.data['phone_number'])
+            mobile_otp = request.data['mobile_otp']
+            email_otp = request.data['email_otp']
+           
+            user_obj = CustomUser.objects.get(phone_number = phone_number)
+            
+            time_diff = (datetime.now(timezone.utc) - user_obj.otp_created_at).total_seconds()
+            
+            is_validate = True
+            if user_obj.otp != mobile_otp or time_diff > 120:
+                is_validate = False
+                return Response({'status' : 403, 'message' : 'Mobile OTP not match or Expired'})
+            
+            time_diff = (datetime.now(timezone.utc) - user_obj.email_token_created_at).total_seconds()
+            if user_obj.email_token != email_otp or time_diff > 120:
+                is_validate = False
+                return Response({'status' : 403, 'message' : 'Email OTP not match or Expired'})
+            
+            if is_validate:
+                return Response({'status' : 200, 'message' : 'OTP Verify successfully'})
+
+        except Exception as e:
+            print(e)
+            return Response({'status' : 404,'message' : 'Something went wrong'}) 
+
 
 class resendOTP(APIView):
     authentication_classes = [JWTAuthentication]
@@ -155,8 +183,7 @@ class resendOTP(APIView):
             if time_diff < 30:
                 return Response({'status' : 403, 'message' : 'resend otp after 30 sec of previous otp send'})
             
-            otp = random.randint(100001, 999999)
-            otp = 123456
+            otp = generate_otp()
             user_obj.otp = otp
             otp_msg = f'Hi, {user} Welcome back. Your Login OTP is {otp}'
             send_msg_to_mobile(user, otp, otp_msg)
@@ -243,8 +270,7 @@ class Login(APIView):
             
             
             refresh = RefreshToken.for_user(user_obj)
-            otp = random.randint(100001, 999999)
-            otp = 123456
+            otp = generate_otp()
             otp_msg = f'Hi, {user} Welcome back. Your Login OTP is {otp}'
 
             
@@ -730,7 +756,10 @@ class CaseViewDetailCalander(APIView):
             print(user)
             req_month = request.data['req_month']
             req_year = request.data['req_year']
-            case_obj = CaseHistory.objects.filter(last_date__month = req_month, last_date__year = req_year, case__advocate = user).order_by('last_date')
+            case_obj = CaseHistory.objects.filter(
+                Q(last_date__month = req_month, last_date__year = req_year, case__advocate = user) |
+                Q(next_date__month = req_month, next_date__year = req_year, case__advocate = user)
+                ).order_by('last_date')
             casehistoryserializer = CaseHistorySerializer(case_obj, many=True)
             print(case_obj)
             
@@ -743,7 +772,55 @@ class CaseViewDetailCalander(APIView):
             return Response({'status' : 404,'message' : 'Something went wrong'})
 
 
-    
+
+class ForgatPassword(APIView):
+    def post(self, request):
+        try:
+            user = request.data['phone_number']
+            user_obj = CustomUser.objects.filter(phone_number = user)
+            if not user_obj.exists():
+                return Response({'status' : 401, 'message' : 'User not exist...'})
+
+            user_obj = CustomUser.objects.get(phone_number = user)
+            
+            #generae mobile otp
+            otp = generate_otp()
+            user_obj.otp = otp
+            otp_msg = f'Hi, {user} Welcome back. For recover your password, Your Mobile OTP is {otp}'
+            send_msg_to_mobile(user, otp, otp_msg)
+            user_obj.otp_created_at = datetime.now(timezone.utc)
+
+            #generate email otp
+            otp = generate_otp()
+            user_obj.email_token = otp
+            email_msg = f'Hi, {user} Welcome back. For recover your password, Your Email OTP is {otp}'
+            user_obj.email_token_created_at = datetime.now(timezone.utc)
+            send_email_otp(user_obj.email, otp, email_msg)
+            user_obj.save()   
+
+            return Response({'status' : 200, 'message' : 'Forgate Password change OTP send successfully'})
+        except Exception as e:
+            print(e)
+            return Response({'status' : 404,'message' : 'Something went wrong'})
+
+class ChangePassword(APIView):
+    def post(self, request):
+        try:
+            user = request.data['phone_number']
+            password = request.data['password']
+            user_obj = CustomUser.objects.filter(phone_number = user)
+            if not user_obj.exists():
+                return Response({'status' : 401, 'message' : 'User not exist...'})
+
+            user_obj = CustomUser.objects.get(phone_number = user)
+            
+            user_obj.set_password(password)
+            user_obj.save()   
+
+            return Response({'status' : 200, 'message' : 'password change successfully'})
+        except Exception as e:
+            print(e)
+            return Response({'status' : 404,'message' : 'Something went wrong'}) 
 
 class getCourtType(generics.ListAPIView):
     authentication_classes = [JWTAuthentication]

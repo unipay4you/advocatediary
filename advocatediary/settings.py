@@ -187,4 +187,4 @@ EMAIL_HOST_USER = 'unipay4you@gmail.com'
 EMAIL_HOST_PASSWORD = 'naor ylgh thuz xvwp'
 
 
-HOST_URL = 'http://127.0.0.1:8000'
+HOST_URL = 'https://mylegaldiary.in'

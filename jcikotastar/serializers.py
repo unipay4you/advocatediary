@@ -59,3 +59,13 @@ class UserGreetingSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserGreeting_JKS
         fields = '__all__'
+
+
+class BulkImageSerializer2(serializers.ModelSerializer):
+
+    image = serializers.ImageField()
+    
+    class Meta:
+        model = ProgramImages_JKS
+        fields = ['ProgramName', 'image']
+        

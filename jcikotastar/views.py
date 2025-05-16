@@ -577,39 +577,27 @@ class ImageUploadView(APIView):
         try:
             
             program_id = request.data['program_id']
-      
-            print(program_id)
+            image = request.data['image']
+            
+
             if not ProgramName_JKS.objects.filter(id = program_id).exists():
-                
+
                 programName = request.data['programName']
                 prog_year = request.data['year']
-                print(programName)
-                print(prog_year)
+                
                 ProgramName_obj = ProgramName_JKS.objects.create(programName = programName, year = prog_year)
                 program_id = ProgramName_obj.id
-            
-            
-            ProgramName_obj = ProgramName_JKS.objects.get(id = program_id)
-            
-         
-            imageserializer = BulkImageSerializer(data=request.data)
-            
-            if imageserializer.is_valid():
-                
-                images = imageserializer.validated_data['images']
-                for image_data in images:
-                    print(image_data['image'])
-                    ProgramImages_JKS.objects.create(
-                        ProgramName = ProgramName_obj,
-                        image = image_data['image']
-                    )
-                
-                return Response({'status' : 200, 'message' : 'Images upload successfully'})
 
-            else:
-                print(imageserializer.error_messages)
-                return Response({'status' : 404,'message' : imageserializer.error_messages})
-            
+
+            ProgramName_obj = ProgramName_JKS.objects.get(id = program_id)
+            ProgramImages_JKS.objects.create(
+                ProgramName = ProgramName_obj,
+                image = image
+                )
+            return Response({'status' : 200, 'message' : 'Images upload successfully'})
+
+
+
         except Exception as e:
             print(e)
             return Response({'status' : 404,'message' : 'Something went wrong'})

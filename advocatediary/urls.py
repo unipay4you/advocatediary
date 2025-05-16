@@ -4,6 +4,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from .import api_views, appviews, advocate_views, staff_views, ecourt_views
+from jcikotastar import views as JKS_views
 from advocatediary.scheduler import scheduler
 
 from rest_framework_simplejwt import views as jwt_views
@@ -93,6 +94,48 @@ urlpatterns = [
 
     path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     
+
+
+
+
+#jcikotastar urls
+    path('jks/api/auth/login/', JKS_views.LoginView.as_view(), name='token_obtain_pair'),     #
+    path('jks/api/auth/verify-otp/', JKS_views.verifyOTP.as_view(), name='token_obtain_pair'),  #
+    path('jks/api/auth/resend-otp/', JKS_views.resendOTP.as_view(), name='token_obtain_pair'),  #
+    path('jks/api/auth/reset-password/', JKS_views.ChangePassword.as_view(), name='token_obtain_pair'),     #
+    path('jks/api/auth/user/', JKS_views.UserView.as_view(), name='token_obtain_pair'), #
+    path('jks/api/auth/forgat-password/', JKS_views.ForgatPassword.as_view(), name='token_obtain_pair'),    #
+    path('jks/api/auth/verify-forgat-password-otp/', JKS_views.verifyForgatePasswordOTP.as_view(), name='token_obtain_pair'), #
+
+
+    path('jks/api/admin/addmember/', JKS_views.AddNewMembter.as_view()), #
+    path('jks/api/admin/dashboard/', JKS_views.AdminDashboardView.as_view()),   #
+    path('jks/api/admin/members/change-status/', JKS_views.MembterChangeStatusView.as_view()), #
+    path('jks/api/admin/members/update/', JKS_views.UpdateMembterProfileViewFromAdmin.as_view()),
+    path('jks/api/admin/members/list/', JKS_views.AdminMemberListView.as_view()), #
+    path('jks/api/admin/members/update-post/', JKS_views.MembterUpdatePostView.as_view()),  #
+    path('jks/api/admin/members/make-admin/', JKS_views.MakeAdminView.as_view()), #
+
+    path('jks/api/admin/programs/', JKS_views.AdminProgramView.as_view()),  #
+    path('jks/api/admin/members/programs/add/', JKS_views.ProgramAddView.as_view()),  #
+    path('jks/api/admin/members/programs/update/', JKS_views.ProgramEditView.as_view()),  #
+
+    path('jks/api/user/profile/', JKS_views.UserProfileView.as_view()), #
+    path('jks/api/user/update-profile/', JKS_views.UpdateProfile.as_view()),    #
+    path('jks/api/user/greeting-cards/', JKS_views.GreetingCardsView.as_view()),
+    path('jks/api/user/greeting-cards/add/', JKS_views.AddGreetingCardsView.as_view()),
+
+
+    path('jks/api/programs/', JKS_views.MembersProgramView.as_view()),
+    
+
+    path('jks/api/program-images/', JKS_views.ProgramImagesView.as_view()), #
+    path('jks/api/program-images/program-id/', JKS_views.ProgramImagesByProgramIDView.as_view()),
+    path('jks/api/program-images/upload/', JKS_views.ImageUploadView.as_view()),    #
+
+
+
+
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

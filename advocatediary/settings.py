@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django_apscheduler',
     'v1',
     'api',
+    'jcikotastar',
 ]
 
 MIDDLEWARE = [

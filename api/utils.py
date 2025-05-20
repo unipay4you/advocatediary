@@ -26,6 +26,18 @@ def send_email_token(email, email_token):
     except Exception as e:
         print(e)
 
+def send_email_password(email, password):
+    try:
+        address = [email,]
+        subject = 'Your Password has been reset'
+        message = f'Your new password is {password}'
+        obj = send_mail(subject, message, settings.EMAIL_HOST_USER, address)
+        print('Mail send successfull')
+        
+    
+    except Exception as e:
+        print(e)
+
 def send_email_otp(email, email_otp, message):
     try:
         address = [email,]

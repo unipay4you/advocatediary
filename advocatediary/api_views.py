@@ -3,7 +3,7 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from v1.models import *
 from api.serializers import *
 from rest_framework.authtoken.models import Token
@@ -18,6 +18,7 @@ from api.utils import *
 from uuid import uuid4
 from django.db import transaction
 from django.db.models import Max,Min,Q, Count
+from django.contrib.auth.hashers import make_password, check_password
 
 
 
@@ -49,11 +50,10 @@ class UpdateUser(APIView):
     
     def post(self, request):
         try:
-            print(request.user)
-            print(request.data)
+           
 
             request_id = request.data['id']
-            print(request_id)
+            
             user_profile_image = request.data['user_profile_image']
             phone_number = str(request.data['phone_number'])
             email = request.data['email']
@@ -72,19 +72,17 @@ class UpdateUser(APIView):
             district_obj = District.objects.get(id = user_district)
             updation_validation = True
 
-            print(user_obj.phone_number)
+            
             if user_obj.phone_number != phone_number:
                 updation_validation = False
                 return Response({'status' : 404,'error' : 'phone_number not match with user'})
 
-            print(user_obj.email)
-            print(email)
-            print(CustomUser.objects.filter(email = email).exists())
+            
             if user_obj.email != email and CustomUser.objects.filter(email = email).exists():
                 updation_validation = False
                 return Response({'status' : 404,'error' : 'Email already exist'})
 
-            print(updation_validation)
+            
             if updation_validation:
                 user_obj.user_name = user_name
                 user_obj.user_dob = user_dob
@@ -258,28 +256,31 @@ class Login(APIView):
         try:
             user = request.data['phone_number']
             password = request.data['password']
-            
 
-            user_obj = CustomUser.objects.filter(phone_number = user)
-            if not user_obj.exists():
+            try:
+                user_obj = CustomUser.objects.get(phone_number = user)
+            except CustomUser.DoesNotExist:
                 return Response({'status' : 401, 'message' : 'User not exist...'})
 
-            user_obj = authenticate(phone_number = user, password = password)
-            if user_obj is None:
+            if not check_password(password, user_obj.password):
                 return Response({'status' : 402, 'message' : 'Mobile number and password not match'})
-            
-            
+
+
+            is_authonthicate = True  # authentication successful
+         
+
+
             refresh = RefreshToken.for_user(user_obj)
             otp = generate_otp()
             otp_msg = f'Hi, {user} Welcome back. Your Login OTP is {otp}'
 
-            
+
             user_obj.otp = otp
             user_obj.otp_created_at = datetime.now(timezone.utc)
             user_obj.save()
 
             send_msg_to_mobile(user, otp, otp_msg)
-            
+
 
             return Response({'status' : 200, 'data' : {'massage' : 'User Login Successfully.' , 'refresh_token': str(refresh),'access_token': str(refresh.access_token)}})
 
@@ -306,29 +307,22 @@ class DateUpdateCase(APIView):
     
     def post(self, request):
         try:
+            print(request.data)
             user = request.user
             case_id = request.data['id']
             next_date = request.data['next_date']
             stage = request.data['stage']
             comments = request.data['comments']
 
-            print(case_id)
-            print(next_date)
-            print(stage)
-            print(comments)
-
 
             case_obj = Case_Master.objects.get(id = case_id)
             last_date_previous = case_obj.last_date
             next_date = datetime.strptime(next_date, "%Y-%m-%d").date()
-            print(next_date)
-            print(last_date_previous)
-
+           
             if next_date < last_date_previous:
-                print("1")
+               
                 last_date_updated = last_date_previous
             else:
-                print("2")
                 last_date_updated = case_obj.next_date
 
 
@@ -363,6 +357,12 @@ class CaseView(APIView):
     def post(self, request):
         try:
             user = request.user
+            
+            #to update last login time
+            user_obj = CustomUser.objects.get(phone_number = user)
+            user_obj.last_login = datetime.now(timezone.utc)
+            user_obj.save()
+            
             case_obj = Case_Master.objects.filter(advocate = user, is_active = True).order_by('next_date')
             user_obj = CustomUser.objects.filter(phone_number = user)
             
@@ -374,11 +374,6 @@ class CaseView(APIView):
             tommarow_cases  = len(case_obj.filter(next_date = datetime.now().date()+timedelta(1)))
             date_awaited_case = len(case_obj.filter(next_date__lt = datetime.now().date()))
 
-            print(total_case)
-            print(today_cases)
-            
-            print(tommarow_cases)
-            print(date_awaited_case)
             case_obj_today = case_obj.filter(next_date = datetime.now().date())
             caseserializer = CaseSerializer(case_obj_today, many=True)
             
@@ -406,8 +401,8 @@ class CaseViewFiltered(APIView):
         try:
             user = request.user
             case_filter = request.data['filter']
-            print(case_filter)
-            case_obj = Case_Master.objects.filter(advocate = user, is_active = True)
+            
+            case_obj = Case_Master.objects.filter(advocate = user)
         
             if case_filter == 'today':
                 cases_list = case_obj.filter(
@@ -420,9 +415,8 @@ class CaseViewFiltered(APIView):
             elif case_filter == 'date_awaited':
                 cases_list = case_obj.filter(next_date__lt = datetime.now().date())
             else: #All cases
-                cases_list = case_obj.filter(is_active = True)
+                cases_list = case_obj
 
-            print(len(cases_list))
             
             caseserializer = CaseSerializer(cases_list, many=True)
             
@@ -493,7 +487,6 @@ class CaseAdd(APIView):
             district_name = District.objects.get(id = district_id)
 
             court_type_id = request.data['court_type_id']
-            print(court_type_id)
             court_type = Court_Type.objects.get(id = court_type_id)
             
             court_id = request.data['court_id']
@@ -549,12 +542,12 @@ class CaseAdd(APIView):
                 sub_advocate = sub_advocate,
                 comments = comments,
                 document = document,
+                court_id = court_name_obj,
                 
             )
 
 
             #add data in case history modale
-            print("2")
             casehistoryObj = CaseHistory.objects.create(
                 case = case_obj,
                 last_date = case_obj.last_date,
@@ -564,7 +557,6 @@ class CaseAdd(APIView):
 
             )
 
-            print("3")
             if document != "":
 
                 casedocument_obj = Case_Document.objects.create(
@@ -677,7 +669,7 @@ class CaseEdit(APIView):
             print(e)
             return Response({'status' : 404,'message' : 'Something went wrong'})
     
-class CaseEditPartial(APIView):
+class CaseClosedView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -687,32 +679,36 @@ class CaseEditPartial(APIView):
             print(request.data)
             case_id = request.data['id']
             comments = request.data['comments']
-            
+
             is_case_desided = request.data['is_desided']
 
             case_obj = Case_Master.objects.get(id = case_id)
-            
+
             print(is_case_desided)
+            case_obj.last_date = case_obj.next_date
+            case_obj.next_date = datetime.now().date()
             if is_case_desided == True:
-                case_obj.last_date = case_obj.next_date
-                case_obj.next_date = datetime.now().date()
                 case_obj.is_desided = True
                 case_obj.is_active = False
-                case_obj.save()
+                particular = "Case Closed"
+            else:
+                case_obj.is_active = True
+                case_obj.is_desided = False
+                particular = "Case Reopen"
+            
+            case_obj.save()
             #add data in case history modale
             print("2")
-            
-            if is_case_desided == True:
-                print("2.1")
-                casehistoryObj = CaseHistory.objects.create(
-                    case = case_obj,
-                    last_date = case_obj.last_date,
-                    next_date = case_obj.next_date,
-                    particular = comments,
-                    stage = case_obj.stage_of_case,
 
-                )
-            
+            casehistoryObj = CaseHistory.objects.create(
+                case = case_obj,
+                last_date = case_obj.last_date,
+                next_date = case_obj.next_date,
+                particular = particular,
+                stage = case_obj.stage_of_case,
+
+            )
+
 
             print(request.data)
 
@@ -808,19 +804,27 @@ class ChangePassword(APIView):
         try:
             user = request.data['phone_number']
             password = request.data['password']
-            user_obj = CustomUser.objects.filter(phone_number = user)
-            if not user_obj.exists():
+      
+
+            try:
+                return self._extracted_from_post_10(user, password)
+            except Exception as e:
+                print(e)
                 return Response({'status' : 401, 'message' : 'User not exist...'})
 
-            user_obj = CustomUser.objects.get(phone_number = user)
-            
-            user_obj.set_password(password)
-            user_obj.save()   
 
-            return Response({'status' : 200, 'message' : 'password change successfully'})
         except Exception as e:
             print(e)
             return Response({'status' : 404,'message' : 'Something went wrong'}) 
+
+    # TODO Rename this here and in `post`
+    def _extracted_from_post_10(self, user, password):
+        user_obj = CustomUser.objects.get(phone_number = user)
+       
+        user_obj.password = make_password(password)
+        user_obj.save()
+       
+        return Response({'status' : 200, 'message' : 'password change successfully'}) 
 
 class getCourtType(generics.ListAPIView):
     authentication_classes = [JWTAuthentication]
@@ -836,12 +840,50 @@ class getCaseType(generics.ListAPIView):
     queryset = Case_Type.objects.all().order_by('case_type')
     serializer_class = CaseTypeSerializer
 
+class CourtUpdateView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            print(request.data)
+            case_id = request.data['case_id']
+            court_id = request.data['court_id']
+
+
+            court_name_obj = Court.objects.get(id = court_id)
+            court_name = court_name_obj.court_name
+            court_no = court_name_obj.court_no
+            
+            case_obj = Case_Master.objects.get(id = case_id)
+            old_court = case_obj.court_no
+
+            case_obj.court_name = court_name
+            case_obj.court_no = court_no
+            case_obj.court_id = court_name_obj
+            case_obj.save()
+
+            CourtTransfer.objects.create(
+                case = case_obj,
+                date = datetime.now().date(),
+                old_court = old_court,
+                new_court = court_no,
+            )
+
+            return Response({'status' : 200, 'message' : "court updated successfully"})
+        
+        except Exception as e:
+            print(e)
+            return Response({'status' : 404,'message' : 'Something went wrong'})
+        
+        
 class getCourt(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         try:
+            print(request.data)
             district_id = request.data['district_id']
             print(district_id)
             court_obj = Court.objects.filter(district = district_id)
@@ -856,8 +898,6 @@ class getCourt(APIView):
         except Exception as e:
             print(e)
             return Response({'status' : 404,'message' : 'Something went wrong'})
-        
-        
 
 
 

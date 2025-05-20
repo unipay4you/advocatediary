@@ -48,19 +48,9 @@ class UserSerializer(serializers.ModelSerializer):
         if 'password' not in data:
             raise serializers.ValidationError({'error':'password required'})
 
-        if len(data['password']) < 8:
-            raise serializers.ValidationError({'error':'Password should be minimum 8 digit and alph numeric with atleast one capital and one lower latter with atleast one special charector'})
+        if len(data['password']) < 6:
+            raise serializers.ValidationError({'error':'Password should be minimum 6 digit'})
 
-        if data['password']:
-            special_characters = "!@#$%^&*()-+?_=,<>/"
-            is_special_digit_exist = any(
-                (c in special_characters for c in data['password'])
-            )
-            is_numeric_digit_exist = any(n.isdigit() for n in data['password'])
-            is_capital_digit_exist = any(n.isupper() for n in data['password'])
-            is_lower_digit_exist = any(n.islower() for n in data['password'])
-            if not (is_lower_digit_exist & is_capital_digit_exist & is_numeric_digit_exist & is_special_digit_exist):
-                raise serializers.ValidationError({'error':'Password should be minimum 8 digit and alph numeric with atleast one capital and one lower latter with atleast one special charector'})
         return data
     
     def create(self, validated_data):
@@ -85,6 +75,38 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
 
+class PasswordChangeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser    
+        fields = ['phone_number', 'password']
+
+
+    def validate(self, data):  # sourcery skip: extract-method
+      
+        if len(data['phone_number']) != 10:
+            raise serializers.ValidationError({'error':'Mobile number should be 10 digit'})
+
+        if data['phone_number']:
+            for n in data['phone_number']:
+                if not n.isdigit():
+                    raise serializers.ValidationError({'error':'Mobile number should be numeric'})
+        
+        if 'password' not in data:
+            raise serializers.ValidationError({'error':'password required'})
+
+        if len(data['password']) < 6:
+            raise serializers.ValidationError({'error':'Password should be minimum 6 digit'})
+
+        return data
+    
+    
+    def update(self, instance, validated_data):
+        if 'password' in validated_data:
+            instance.set_password(validated_data['password'])
+            instance.save()
+            return instance
+        else:
+            raise serializers.ValidationError({'error':'Password required'})
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -92,9 +114,10 @@ class ProfileSerializer(serializers.ModelSerializer):
     user_district = DistrictSerializer()
     class Meta:
         model = CustomUser
+        #field = '--all--'
         fields = ["id","phone_number","user_profile_image","email","user_type","user_name","user_dob","user_address1",
                   "user_address2","user_address3","user_district_pincode","advocate_registration_number","user_under_which_advocate",
-                  "is_phone_number_verified","is_email_verified","is_first_login","user_state","user_district"]
+                  "is_phone_number_verified","is_email_verified","is_first_login","user_state","user_district", "is_admin","is_superuser"]
 
 
 
@@ -119,15 +142,21 @@ class CaseTypeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CourtSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Court  
+        fields = '__all__'
 
 class CaseSerializer(serializers.ModelSerializer):
     advocate = AdvocateSerializer()
     stage_of_case = StageOfCaseSerializer()
     case_type = CaseTypeSerializer()
+    court_id = CourtSerializer()
     class Meta:
         model = Case_Master
-        fields = ["id","crn","case_no","case_year","court_type","court_name","court_no","under_section", "fir_number", "fir_year", "police_station", "petitioner","respondent",
-                  "client_type","last_date","next_date","sub_advocate","comments","case_type","stage_of_case","advocate"]
+        fields = '__all__'
+        #fields = ["id","crn","case_no","case_year","court_type","court_name","court_no","under_section", "fir_number", "fir_year", "police_station", "petitioner","respondent",
+                 # "client_type","last_date","next_date","sub_advocate","comments","case_type","stage_of_case","advocate","is_active","is_desided","document", "court_id"]
 
 
 class CaseByIDSerializer(serializers.ModelSerializer):
@@ -151,7 +180,8 @@ class CourtTypeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CourtSerializer(serializers.ModelSerializer):
-    
+    district = DistrictSerializer()
+    court_type = CourtTypeSerializer()
     class Meta:
         model = Court
         fields = '__all__'

@@ -96,6 +96,8 @@ class CustomUser(AbstractUser):
     email_token = models.CharField(max_length=200)
     email_token_created_at = models.DateTimeField(blank=True, null=True)
     last_login = models.DateTimeField(blank=True, null=True)
+    is_admin = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
     
     REQUIRED_FIELDS = []
     objects = UserManager()
@@ -170,6 +172,8 @@ class Case_Master(BaseModel):
     document = models.FileField(upload_to='media/casefiles', blank=True, null=True)
     is_desided = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    court_id = models.ForeignKey(Court, on_delete=models.CASCADE, blank=True, null=True)
+    
 
     def __str__(self):
         return self.petitioner
@@ -219,6 +223,3 @@ class Case_Document(BaseModel):
 
 
 
-
-
-    

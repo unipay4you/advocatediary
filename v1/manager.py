@@ -8,7 +8,7 @@ class UserManager(BaseUserManager):
         extra_fields['email'] = self.normalize_email(extra_fields.get('email'))
         
         user = self.model(phone_number=phone_number, **extra_fields)
-
+        
         user.set_password(password)
         user.save(using=self.db)
         return user

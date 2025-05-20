@@ -8,6 +8,7 @@ from jcikotastar import views as JKS_views
 from advocatediary.scheduler import scheduler
 
 from rest_framework_simplejwt import views as jwt_views
+from advocatediary import masteradmin_views
 
 
 
@@ -77,11 +78,12 @@ urlpatterns = [
     path('api/case/filter/', api_views.CaseViewFiltered.as_view()),
     path('api/case/add/', api_views.CaseAdd.as_view()),
     path('api/case/edit/', api_views.CaseEdit.as_view()),
-    path('api/case/partialedit/', api_views.CaseEditPartial.as_view()),
+    path('api/case/close/', api_views.CaseClosedView.as_view()),
     path('api/case/detail/', api_views.CaseViewDetailByID.as_view()),
     path('api/case/calenderdetail/', api_views.CaseViewDetailCalander.as_view()),
 
     path('api/case/dateupdate/', api_views.DateUpdateCase.as_view()),
+    path('api/getcourt/update/', api_views.CourtUpdateView.as_view()),
 
     
     
@@ -136,6 +138,20 @@ urlpatterns = [
 
 
 
+
+
+#urls for supperadmin
+    path('api/superadmin/dashboard/', masteradmin_views.SuperAdminDashboardView.as_view()),
+    path('api/superadmin/verify-otp/', masteradmin_views.SuperAdminVerifyOTPView.as_view()), 
+    path('api/superadmin/verify-email/', masteradmin_views.SuperAdminVerifyEmailView.as_view()), 
+    path('api/superadmin/toggle-status/', masteradmin_views.SuperAdminToggleStatusView.as_view()),
+    path('api/superadmin/reset-password/', masteradmin_views.SuperAdminResetPasswordView.as_view()), 
+    path('api/superadmin/courts/', masteradmin_views.SuperAdminCourtView.as_view()),
+    path('api/superadmin/courts/add/', masteradmin_views.SuperAdminCourtAddView.as_view()), 
+    #path('api/superadmin/advocate-list/', api_views.AdvocateListView.as_view()),
+    #path('api/superadmin/advocate/update/', api_views.AdvocateUpdateView.as_view()), 
+    #path('api/superadmin/advocate/delete/', api_views.AdvocateDeleteView.as_view()), 
+    #path('api/superadmin/advocate/add/', api_views.AdvocateAddView.as_view()), 
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -25,6 +25,7 @@ def create_fake_users(n):
     password = 'Dharm@123'
     for _ in range(n):
         user_id = generate_user_id()
+        print(user_id)
         user_id_ref = User_ID.objects.create(user_id=user_id)
         user_id = user_id_ref
         user_name = fake.name()

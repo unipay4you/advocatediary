@@ -21,7 +21,9 @@ def delete_old_job_executions(max_age = 604_800): # max age in seconds
 
 def generate_daily_pdf():
     try:
-        user_obj = CustomUser.objects.filter(is_active=True, next_date = datetime.now().date())
+        today = datetime.now().date()
+        print('generating daily pdf for date:', today)
+        user_obj = CustomUser.objects.filter(is_active=True, next_date = today)
 
         for user in user_obj:
             return _extracted_from_generate_daily_pdf_6(user)
@@ -31,7 +33,7 @@ def generate_daily_pdf():
 
 # TODO Rename this here and in `generate_daily_pdf`
 def _extracted_from_generate_daily_pdf_6(user):
-    print('Generating daily PDF')
+    print('Generating daily PDF for user:', user.user_name , 'phone number:', user.phone_number)
     user_name = user.user_name
     data_records = Case_Master.objects.filter(advocate__phone_number= user.phone_number).order_by('court__court_no')
 
@@ -102,6 +104,8 @@ def _extracted_from_generate_daily_pdf_6(user):
         'Attached is your daily case report.',
         to=[user.email],
     )
+    print('Sending email to:', user.email)
+    # Attach the PDF file
     email.attach('daily_case_report.pdf', buffer.read(), 'application/pdf')
     email.send()
     print('Email sent successfully')

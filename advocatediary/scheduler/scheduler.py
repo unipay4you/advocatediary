@@ -143,10 +143,10 @@ def  start():
                       replace_existing=True)
     
     
-    scheduler.add_job(generate_daily_pdf, 'interval', minutes=2,
-                      jobstore='default',
-                      id='generate_daily_pdf',
-                      replace_existing=True)
+    scheduler.add_job(generate_daily_pdf, trigger='cron', hour=7, minute=0,
+                    jobstore='default',
+                    id='generate_daily_pdf',
+                    replace_existing=True)
     
     try:
         scheduler.start()

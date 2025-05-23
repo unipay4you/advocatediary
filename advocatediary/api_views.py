@@ -125,7 +125,7 @@ class verifyOTP(APIView):
 
             user_obj = CustomUser.objects.get(phone_number = user)
             
-            time_diff = (datetime.now - user_obj.otp_created_at).total_seconds()
+            time_diff = (datetime.now(timezone.utc) - user_obj.otp_created_at).total_seconds()
             
             
             if (user_obj.otp != request.data['otp']) or time_diff > 300:
@@ -147,14 +147,14 @@ class verifyOTPChangepwd(APIView):
            
             user_obj = CustomUser.objects.get(phone_number = phone_number)
             
-            time_diff = (datetime.now - user_obj.otp_created_at).total_seconds()
+            time_diff = (datetime.now(timezone.utc) - user_obj.otp_created_at).total_seconds()
             
             is_validate = True
             if user_obj.otp != mobile_otp or time_diff > 120:
                 is_validate = False
                 return Response({'status' : 403, 'message' : 'Mobile OTP not match or Expired'})
             
-            time_diff = (datetime.now - user_obj.email_token_created_at).total_seconds()
+            time_diff = (datetime.now(timezone.utc) - user_obj.email_token_created_at).total_seconds()
             if user_obj.email_token != email_otp or time_diff > 120:
                 is_validate = False
                 return Response({'status' : 403, 'message' : 'Email OTP not match or Expired'})
@@ -177,7 +177,7 @@ class resendOTP(APIView):
             
             user_obj = CustomUser.objects.get(phone_number = user)
             
-            time_diff = (datetime.now - user_obj.otp_created_at).total_seconds()
+            time_diff = (datetime.now(timezone.utc) - user_obj.otp_created_at).total_seconds()
            
             
             if time_diff < 30:
@@ -187,7 +187,7 @@ class resendOTP(APIView):
             user_obj.otp = otp
             otp_msg = f'Hi, {user} Welcome back. Your Login OTP is {otp}'
             send_msg_to_mobile(user, otp, otp_msg)
-            user_obj.otp_created_at = datetime.now
+            user_obj.otp_created_at = datetime.now(timezone.utc)
             
             user_obj.save()
             return Response({'status' : 200, 'message' : 'OTP Resend successfully'})
@@ -211,7 +211,7 @@ class resendEmail(APIView):
             email_token = uuid4()
             print(email_token)
             user_obj.email_token = email_token
-            user_obj.email_token_created_at = datetime.now
+            user_obj.email_token_created_at = datetime.now(timezone.utc)
             user_obj.save()
 
             send_email_token(user_obj.email, email_token)
@@ -240,7 +240,7 @@ class ChangeEmail(APIView):
                 
                 user_obj.email = new_email
                 user_obj.email_token = email_token
-                user_obj.email_token_created_at = datetime.now
+                user_obj.email_token_created_at = datetime.now(timezone.utc)
                 user_obj.save()
 
                 send_email_token(user_obj.email, email_token)
@@ -278,7 +278,7 @@ class Login(APIView):
 
 
             user_obj.otp = otp
-            user_obj.otp_created_at = datetime.now
+            user_obj.otp_created_at = datetime.now(timezone.utc)
             user_obj.save()
 
             send_msg_to_mobile(user, otp, otp_msg)
@@ -362,7 +362,7 @@ class CaseView(APIView):
             
             #to update last login time
             user_obj = CustomUser.objects.get(phone_number = user)
-            user_obj.last_login = datetime.now
+            user_obj.last_login = datetime.now(timezone.utc)
             user_obj.save()
             
             case_obj = Case_Master.objects.filter(advocate = user, is_active = True).order_by('next_date')
@@ -786,13 +786,13 @@ class ForgatPassword(APIView):
             user_obj.otp = otp
             otp_msg = f'Hi, {user} Welcome back. For recover your password, Your Mobile OTP is {otp}'
             send_msg_to_mobile(user, otp, otp_msg)
-            user_obj.otp_created_at = datetime.now
+            user_obj.otp_created_at = datetime.now(timezone.utc)
 
             #generate email otp
             otp = generate_otp()
             user_obj.email_token = otp
             email_msg = f'Hi, {user} Welcome back. For recover your password, Your Email OTP is {otp}'
-            user_obj.email_token_created_at = datetime.now
+            user_obj.email_token_created_at = datetime.now(timezone.utc)
             send_email_otp(user_obj.email, otp, email_msg)
             user_obj.save()   
 

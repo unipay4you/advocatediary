@@ -87,11 +87,7 @@ def _extracted_from_generate_daily_pdf_6(user, today):
                 f"{record.petitioner} vs {record.respondent}", normal_style
             ),
             Paragraph(record.stage_of_case.stage_of_case, normal_style),
-            (
-                record.next_date.strftime("%d-%m-%Y")
-                if record.next_date
-                else ""
-            ),
+            
         ]
         for i, record in enumerate(data_records, start=1)
     )

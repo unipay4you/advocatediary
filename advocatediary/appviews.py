@@ -169,7 +169,7 @@ def _extracted_from_REGISTER(request, phone_number, user_name, password, email):
     otp = 123456 #defalt otp for testing
     user_id = generate_user_id()
     otp_msg = ''
-    otp_created_at = datetime.datetime.now
+    otp_created_at = datetime.datetime.now(datetime.timezone.utc)
     otp_send_obj = send_otp_to_mobile(phone_number, otp, otp_msg)
     user_id_ref = User_ID.objects.create(user_id=user_id)
 
@@ -204,7 +204,7 @@ def RESEND_OTP(request):
     user = CustomUser.objects.get(phone_number=phone_number)
     otp_created_at = user.otp_created_at
    
-    time_current = datetime.datetime.now
+    time_current = datetime.datetime.now(datetime.timezone.utc)
    
     time_diff = time_current - otp_created_at
     time_diff = time_diff.total_seconds()
@@ -249,7 +249,7 @@ def OTP_VERIFY(request):
     user = CustomUser.objects.get(phone_number=phone_number)
 
     otp_created_at = user.otp_created_at
-    time_current = datetime.datetime.now
+    time_current = datetime.datetime.now(datetime.timezone.utc)
 
     time_diff = time_current - otp_created_at
     time_diff = time_diff.total_seconds()
@@ -257,7 +257,7 @@ def OTP_VERIFY(request):
     email = user.email
     email_token = uuid.uuid4()
 
-    email_token_created_at = datetime.datetime.now
+    email_token_created_at = datetime.datetime.now(datetime.timezone.utc)
     if time_diff < 180:
         if user.otp == otp:
             return _extracted_from_OTP_VERIFY_29(
@@ -305,7 +305,7 @@ def VERIFY(request, email_token):
         user = CustomUser.objects.get(email_token = email_token)
         email_token_created_at = user.email_token_created_at
 
-        time_current = datetime.datetime.now
+        time_current = datetime.datetime.now(datetime.timezone.utc)
 
         time_diff = time_current - email_token_created_at
         time_diff = time_diff.total_seconds()
@@ -327,7 +327,7 @@ def resend_email_link(request):
 
     user = CustomUser.objects.get(phone_number=phone_number)
 
-    email_token_created_at = datetime.datetime.now
+    email_token_created_at = datetime.datetime.now(datetime.timezone.utc)
 
     email = user.email
     email_token = uuid.uuid4()

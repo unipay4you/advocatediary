@@ -23,20 +23,36 @@ def generate_daily_pdf():
     try:
         today = datetime.now().date()
         print('generating daily pdf for date:', today)
-        user_obj = CustomUser.objects.filter(is_active=True, next_date = today)
+        user_obj = CustomUser.objects.filter(is_active=True).order_by('id')
+        if not user_obj.exists():
+            print('No active users found for today')
 
+        results = []    
         for user in user_obj:
-            return _extracted_from_generate_daily_pdf_6(user)
+            try:
+                result = _extracted_from_generate_daily_pdf_6(user, today)
+                results.append(f"{user.user_name}: Success")
+            except Exception as e:
+                results.append(f"{user.user_name}: Failed with error {str(e)}")
+
+        print('Results:', results)        
+        return 'PDF generation completed for all users.'
     except Exception as e:
         return f'Error: {str(e)}'
 
 
 # TODO Rename this here and in `generate_daily_pdf`
-def _extracted_from_generate_daily_pdf_6(user):
-    print('Generating daily PDF for user:', user.user_name , 'phone number:', user.phone_number)
+def _extracted_from_generate_daily_pdf_6(user, today):
+    print('Generating daily PDF for user:', user.user_name , 'phone number:', user.phone_number, 'Date :', today)
+    if not user.is_active:
+        print('User is not active:', user.user_name)
+        
+    
     user_name = user.user_name
-    data_records = Case_Master.objects.filter(advocate__phone_number= user.phone_number).order_by('court__court_no')
-
+    data_records = Case_Master.objects.filter(advocate__phone_number= user.phone_number, next_date = today)
+    if not data_records.exists():
+        print('No data records found for user:', user.user_name)
+        
     buffer = BytesIO()
     doc = SimpleDocTemplate(
         buffer,
@@ -44,7 +60,6 @@ def _extracted_from_generate_daily_pdf_6(user):
         rightMargin=10, leftMargin=10,
         topMargin=10, bottomMargin=10,
     )
-
     styles = getSampleStyleSheet()
     normal_style = styles["Normal"]
     normal_style.fontSize = 9
@@ -52,11 +67,12 @@ def _extracted_from_generate_daily_pdf_6(user):
     title_string = f"Daily Case Report for Advocate : {user_name} for {datetime.now().date().strftime('%d-%m-%Y')}"
     title = Paragraph(title_string, styles["Title"])
     elements = [title, Spacer(1, 12)]
-
+    
     data = [[
         "S.No", "Case No", "Last Date", "Court", "Title", "Stage of Case", "Next Date"
     ]]
-
+    
+    
     data.extend(
         [
             str(i),
@@ -79,6 +95,7 @@ def _extracted_from_generate_daily_pdf_6(user):
         ]
         for i, record in enumerate(data_records, start=1)
     )
+
     table = Table(data, colWidths=[40, 80, 70, 80, 280, 200, 80])
     table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#003366")),
@@ -109,7 +126,7 @@ def _extracted_from_generate_daily_pdf_6(user):
     email.attach('daily_case_report.pdf', buffer.read(), 'application/pdf')
     email.send()
     print('Email sent successfully')
-    return 'PDF generated and emailed successfully.'
+    print('PDF generated and emailed successfully.')
     
 
 def  start():

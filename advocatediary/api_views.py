@@ -19,6 +19,8 @@ from uuid import uuid4
 from django.db import transaction
 from django.db.models import Max,Min,Q, Count
 from django.contrib.auth.hashers import make_password, check_password
+from reportlab.pdfgen import canvas
+from io import BytesIO
 
 
 
@@ -901,46 +903,6 @@ class getCourt(APIView):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class GeneratePDF(APIView):
-    def get(self, request):
-
-
-        return Response({'status' : 200})
-
-
-
-
 class Case_API(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -964,6 +926,21 @@ class Case_API(APIView):
 
     def delete(self, request):
         pass
+
+
+
+
+from rest_framework.permissions import AllowAny
+from django.http import FileResponse
+class DataPDFView(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request):
+        user_obj = CustomUser.objects.get(phone_number = '7611999997', is_active = True)
+        user_name = user_obj.user_name
+        data_records = Case_Master.objects.filter(advocate__phone_number = '7611999997')
+        pdf_buffer = generate_pdf(data_records, user_name)
+        return FileResponse(pdf_buffer, as_attachment=True, filename="data_report.pdf")
+
 
 
 

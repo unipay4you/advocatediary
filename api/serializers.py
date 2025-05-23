@@ -155,9 +155,7 @@ class CaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Case_Master
         fields = '__all__'
-        #fields = ["id","crn","case_no","case_year","court_type","court_name","court_no","under_section", "fir_number", "fir_year", "police_station", "petitioner","respondent",
-                 # "client_type","last_date","next_date","sub_advocate","comments","case_type","stage_of_case","advocate","is_active","is_desided","document", "court_id"]
-
+       
 
 class CaseByIDSerializer(serializers.ModelSerializer):
     advocate = AdvocateSerializer()

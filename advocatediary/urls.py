@@ -88,11 +88,8 @@ urlpatterns = [
     
     
     
-    
-    
-    path('api/test', api_views.Case_API.as_view()),
-    path('api/court', api_views.Court),
-    
+    path('api/pdf/', api_views.DataPDFView.as_view(), name='data-pdf'),
+   
 
     path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     

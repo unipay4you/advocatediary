@@ -145,10 +145,7 @@ urlpatterns = [
     path('api/superadmin/reset-password/', masteradmin_views.SuperAdminResetPasswordView.as_view()), 
     path('api/superadmin/courts/', masteradmin_views.SuperAdminCourtView.as_view()),
     path('api/superadmin/courts/add/', masteradmin_views.SuperAdminCourtAddView.as_view()), 
-    #path('api/superadmin/advocate-list/', api_views.AdvocateListView.as_view()),
-    #path('api/superadmin/advocate/update/', api_views.AdvocateUpdateView.as_view()), 
-    #path('api/superadmin/advocate/delete/', api_views.AdvocateDeleteView.as_view()), 
-    #path('api/superadmin/advocate/add/', api_views.AdvocateAddView.as_view()), 
+    
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

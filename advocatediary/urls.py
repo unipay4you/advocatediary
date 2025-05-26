@@ -10,6 +10,8 @@ from advocatediary.scheduler import scheduler
 from rest_framework_simplejwt import views as jwt_views
 from advocatediary import masteradmin_views
 
+from paysprint import views as PS_views
+
 
 
 urlpatterns = [
@@ -147,11 +149,13 @@ urlpatterns = [
     path('api/superadmin/courts/add/', masteradmin_views.SuperAdminCourtAddView.as_view()), 
     
 
-
+#urls for Paysprint
+    path('paysprint/api/test/', PS_views.TestView.as_view(), name='bbps_login'),
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
-scheduler.start()
+#scheduler.start()
 
 
 

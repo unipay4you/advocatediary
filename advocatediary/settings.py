@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'v1',
     'api',
     'jcikotastar',
+    'paysprint',
 ]
 
 MIDDLEWARE = [

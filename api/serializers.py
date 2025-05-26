@@ -55,8 +55,9 @@ class UserSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         email_token = uuid4()
-        otp = random.randint(100001, 999999)
+        otp = generate_otp()
         otp_msg = f'Your account verification OTP is {otp}'
+        
         
         user = CustomUser.objects.create(
             user_name = validated_data['user_name'],

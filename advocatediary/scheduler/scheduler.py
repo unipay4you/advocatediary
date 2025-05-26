@@ -23,7 +23,10 @@ def generate_daily_pdf():
     try:
         today = datetime.now().date()
         print('generating daily pdf for date:', today)
-        user_obj = CustomUser.objects.filter(is_active=True).order_by('id')
+        
+
+
+        user_obj = CustomUser.objects.filter(is_active=True, is_phone_number_verified = True, is_email_verified = True, is_first_login = False  ).order_by('id')
         if not user_obj.exists():
             print('No active users found for today')
 

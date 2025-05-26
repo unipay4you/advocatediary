@@ -74,13 +74,16 @@ class SuperAdminVerifyOTPView(APIView):
     
     def post(self, request):
         try:
+            admin_user = request.user
+            user_obj = CustomUser.objects.get(phone_number = admin_user)
+
+            
+            if not user_obj.is_superuser:
+                return Response({'status' : 401, 'message' : 'You are not authorized to access this page'})
+            
             
             user = str(request.data['user_id'])
             user_obj = CustomUser.objects.get(id = user)
-            
-
-            if not user_obj.is_superuser:
-                return Response({'status' : 401, 'message' : 'You are not authorized to access this page'})
             
             user_obj.is_phone_number_verified  = True
             user_obj.save()
@@ -96,13 +99,16 @@ class SuperAdminVerifyEmailView(APIView):
     
     def post(self, request):
         try:
+            admin_user = request.user
+            user_obj = CustomUser.objects.get(phone_number = admin_user)
+
+            
+            if not user_obj.is_superuser:
+                return Response({'status' : 401, 'message' : 'You are not authorized to access this page'})
+            
             
             user = str(request.data['user_id'])
             user_obj = CustomUser.objects.get(id = user)
-            
-
-            if not user_obj.is_superuser:
-                return Response({'status' : 401, 'message' : 'You are not authorized to access this page'})
             
             user_obj.is_email_verified  = True
             user_obj.save()
@@ -119,15 +125,17 @@ class SuperAdminToggleStatusView(APIView):
     
     def post(self, request):
         try:
+            admin_user = request.user
+            user_obj = CustomUser.objects.get(phone_number = admin_user)
+
             
-            user = str(request.data['user_id'])
-            user_obj = CustomUser.objects.get(id = user)
-
-
             if not user_obj.is_superuser:
                 return Response({'status' : 401, 'message' : 'You are not authorized to access this page'})
             
             
+            user = str(request.data['user_id'])
+            user_obj = CustomUser.objects.get(id = user)
+
             user_obj.is_active = not user_obj.is_active
             user_obj.save()
             
@@ -148,14 +156,16 @@ class SuperAdminResetPasswordView(APIView):
     
     def post(self, request):
         try:
+            admin_user = request.user
+            user_obj = CustomUser.objects.get(phone_number = admin_user)
+
             
-            user = str(request.data['user_id'])
-            user_obj = CustomUser.objects.get(id = user)
-
-
             if not user_obj.is_superuser:
                 return Response({'status' : 401, 'message' : 'You are not authorized to access this page'})
             
+            
+            user = str(request.data['user_id'])
+            user_obj = CustomUser.objects.get(id = user)
 
             new_password = str(random.randint(100000,999999))
             email = user_obj.email

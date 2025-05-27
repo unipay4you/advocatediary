@@ -85,7 +85,7 @@ def _extracted_from_generate_daily_pdf_6(user, today):
                 if record.last_date
                 else ""
             ),
-            Paragraph(record.court_name, normal_style),
+            Paragraph(record.court_no, normal_style),
             Paragraph(
                 f"{record.petitioner} vs {record.respondent}", normal_style
             ),
@@ -136,13 +136,13 @@ def  start():
                       id='daily_db_backup',
                       replace_existing=True)
     
-    scheduler.add_job(delete_old_job_executions, 'interval', hours=23,
+    scheduler.add_job(delete_old_job_executions, trigger='cron', hour=1, minute=0,
                       jobstore='default',
                       id='delete_old_job_executions',
                       replace_existing=True)
     
     
-    scheduler.add_job(generate_daily_pdf, trigger='cron', hour=7, minute=0,
+    scheduler.add_job(generate_daily_pdf, trigger='cron', hour=5, minute=0,
                     jobstore='default',
                     id='generate_daily_pdf',
                     replace_existing=True)

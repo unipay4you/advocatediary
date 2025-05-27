@@ -932,13 +932,11 @@ class Case_API(APIView):
 
 from rest_framework.permissions import AllowAny
 from django.http import FileResponse
+from advocatediary.scheduler.scheduler import generate_daily_pdf
 class DataPDFView(APIView):
     permission_classes = [AllowAny]
     def get(self, request):
-        user_obj = CustomUser.objects.get(phone_number = '7611999997', is_active = True)
-        user_name = user_obj.user_name
-        data_records = Case_Master.objects.filter(advocate__phone_number = '7611999997')
-        pdf_buffer = generate_pdf(data_records, user_name)
+        pdf_buffer = generate_daily_pdf()
         return FileResponse(pdf_buffer, as_attachment=True, filename="data_report.pdf")
 
 

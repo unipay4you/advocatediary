@@ -24,5 +24,6 @@ admin.site.register(Associate_With_Client)
 admin.site.register(CaseHistory)
 admin.site.register(CourtTransfer)
 admin.site.register(Case_Document)
+admin.site.register(Andoid_app_version)
 
 

@@ -186,47 +186,7 @@ class CourtSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+class AndoidAppVersionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Andoid_app_version
+        fields = '__all__'

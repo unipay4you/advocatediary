@@ -86,6 +86,7 @@ urlpatterns = [
 
     path('api/case/dateupdate/', api_views.DateUpdateCase.as_view()),
     path('api/getcourt/update/', api_views.CourtUpdateView.as_view()),
+    path('api/version/', api_views.getVersionView.as_view()),
 
     
     

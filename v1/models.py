@@ -221,5 +221,16 @@ class Case_Document(BaseModel):
         return self.document_name
 
 
+class Andoid_app_version(BaseModel):
+    version = models.CharField(max_length=20, unique=True)
+    launch_date = models.DateField(auto_now_add=True)
+    description = models.TextField(blank=True, null=True)
+    app_file = models.FileField(upload_to='media/app_versions', blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.version
+
+
 
 

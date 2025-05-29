@@ -940,6 +940,20 @@ class DataPDFView(APIView):
         return FileResponse(pdf_buffer, as_attachment=True, filename="data_report.pdf")
 
 
+class getVersionView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        try:
+            version = Andoid_app_version.objects.get(is_active=True)
+            versionserializer = AndoidAppVersionSerializer(version)
+            return Response({'status': 200, 'version': versionserializer.data})
+
+        except Exception as e:
+            print(e)
+            return Response({'status': 404, 'message': 'Something went wrong'})
+
+
 
 
   

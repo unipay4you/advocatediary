@@ -9,7 +9,7 @@ from django.core.paginator import Paginator
 from django.db.models import Max,Min,Q, Count
 from datetime import datetime, timedelta
 from django.db import transaction
-
+from actbook.models import *
 
 
 
@@ -25,6 +25,12 @@ def adv_index(request):
     if is_first_login := is_first_time_login(phone_number):
         return redirect('profile')
     
+    user_obj = CustomUser.objects.get(phone_number = phone_number)
+    if not user_obj.is_superuser:
+        is_superuser = False
+    else:
+        is_superuser = True
+
     all_case = Case_Master.objects.filter(advocate = phone_number, is_active = True).order_by('next_date')
     
     list_filter = 'today' #defalt for display today list
@@ -78,7 +84,8 @@ def adv_index(request):
         'page_range' : page_range,
         'current_page_number' : current_page_number,
         'list_filter' : list_filter,
-        'case_stage_obj' : case_stage_obj
+        'case_stage_obj' : case_stage_obj,
+        'is_superuser' : is_superuser,
         
     }
 
@@ -238,7 +245,6 @@ def ALLCLIENTS(request):  # sourcery skip: avoid-builtin-shadow
         return redirect('allclients')
         
     allclients = Clients.objects.filter(advocate = user).order_by('name')
-    
     
     if request.GET.get('search'):
         search = request.GET.get('search')
@@ -452,4 +458,222 @@ def _extracted_from_CASEEDIT(request, case_obj):
 
     case_obj.save()
     return redirect('adv_index')
+
+
+
+@transaction.atomic
+@login_required(login_url = 'login')
+def act_add_view(request):
+    phone_number = request.user
+    is_login_valid = check_login_validation(phone_number)
+
+    if not is_login_valid:
+        return redirect('login')
+
+
+    if is_first_login := is_first_time_login(phone_number):
+        return redirect('profile')
     
+    if request.method == 'POST':
+        return _extracted_from_NEWACT(request)
+
+    return render(request, 'advocate/addact.html')
+
+def _extracted_from_NEWACT(request):
+    act_name_en = request.POST.get('act_name_en')
+    act_image_en = request.FILES.get('act_image_en')
+    act_name_hi = request.POST.get('act_name_hi')
+    act_image_hi = request.FILES.get('act_image_hi')
+    act_discription = request.POST.get('act_discription')
+    act_short_name = request.POST.get('act_short_name')
+    document_en = request.FILES.get('document_en')
+    document_hi = request.FILES.get('document_hi')
+    date_introduce = request.POST.get('date_introduce')
+    if not date_introduce:
+        date_introduce = datetime.now().date()
+    else:
+        date_introduce = datetime.strptime(date_introduce, '%Y-%m-%d').date()
+
+
+    # Validate the inputs
+    if not act_name_en or len(act_name_en) < 3:
+        messages.error(request, 'Act name in English is required and must be at least 3 characters long.')
+        return redirect('newact')
+    
+    if not act_short_name or len(act_short_name) < 3:
+        messages.error(request, 'Act short name is required and must be at least 3 characters long.')
+        return redirect('newact')
+    if actbook.objects.filter(act_name=act_name_en).exists():
+        messages.error(request, 'An act with this name already exists.')
+        return redirect('newact')
+    if actbook.objects.filter(act_short_name=act_short_name).exists():
+        messages.error(request, 'An act with this short name already exists.')
+        return redirect('newact')
+    
+
+    if act_obj := actbook.objects.create(
+        act_name=act_name_en,
+        act_name_hindi=act_name_hi,
+        act_description=act_discription,
+        act_short_name=act_short_name,
+        act_date_enacted=date_introduce,
+        act_pdf=document_en,
+        act_pdf_hindi=document_hi,
+        act_image=act_image_en,
+        act_image_hindi=act_image_hi,
+    ):
+        messages.success(request, 'Act added successfully')
+    else:
+        messages.error(request, 'Failed to add act. Please try again.')
+    # Optionally, you can redirect to a different page or render a success message
+
+    return redirect('newact')  # Redirect to the new act page or any other page as needed
+
+
+@transaction.atomic
+@login_required(login_url = 'login')
+def act_add_chapter(request):
+    phone_number = request.user
+    is_login_valid = check_login_validation(phone_number)
+
+    if not is_login_valid:
+        return redirect('login')
+
+
+    if is_first_login := is_first_time_login(phone_number):
+        return redirect('profile')
+    
+    act_obj = actbook.objects.all().order_by('act_name')
+    chapter_count = 0
+    actId = request.GET.get('actId')
+    
+    if actId:
+        act_obj_1 = actbook.objects.get(id=actId)
+        chapter_count = actbookchapter.objects.filter(act=act_obj_1).aggregate(Max('chapter_number'))['chapter_number__max']
+    
+    if chapter_count is None:
+        chapter_count = 0
+    
+    if request.method == 'POST':
+        return _extracted_from_NEWCHAPTER(request)
+    
+    context = {
+        'acts' : act_obj,
+        'chapter_count' : chapter_count + 1,
+        'actId' : actId
+    }
+
+    return render(request, 'advocate/addchapter.html', context)
+
+def _extracted_from_NEWCHAPTER(request):
+    actId = request.POST.get('act_id')
+    act_obj = actbook.objects.get(id=actId)
+    chapter_number = request.POST.get('chapter_number')
+    chapter_title = request.POST.get('chapter_title_en')
+    chapter_title_hindi = request.POST.get('chapter_title_hi')
+    chapter_description = request.POST.get('chapter_discription')
+    
+
+    # Validate the inputs
+    if not chapter_number or not chapter_title:
+        messages.error(request, 'Chapter number and title are required.')
+        return redirect('newchapter')
+    if not chapter_title_hindi:
+        messages.error(request, 'Chapter title in Hindi is required.')
+        return redirect('newchapter')
+    if actbookchapter.objects.filter(act=act_obj, chapter_number=chapter_number).exists():
+        messages.error(request, 'An act chapter with this number already exists.')
+        return redirect('newchapter')
+    
+    
+    
+    if chapter_obj := actbookchapter.objects.create(
+        act=act_obj,
+        chapter_number=chapter_number,
+        chapter_title=chapter_title,
+        chapter_title_hindi=chapter_title_hindi,
+        chapter_description=chapter_description
+    ):
+        messages.success(request, 'Act chapter added successfully')
+        
+    else:
+        messages.error(request, 'Failed to add act chapter. Please try again.')
+        
+    # Optionally, you can redirect to a different page or render a success message
+
+    return redirect('newchapter')  # Redirect to the new act page or any other page as needed
+
+
+@transaction.atomic
+@login_required(login_url = 'login')
+def act_add_section(request):
+    phone_number = request.user
+    is_login_valid = check_login_validation(phone_number)
+
+    if not is_login_valid:
+        return redirect('login')
+
+
+    if is_first_login := is_first_time_login(phone_number):
+        return redirect('profile')
+    
+    act_obj = actbook.objects.all().order_by('act_name')
+    chapter_count = []
+    actId = request.GET.get('actId')
+    
+    if actId:
+        act_obj_1 = actbook.objects.get(id=actId)
+        chapter_count = actbookchapter.objects.filter(act=act_obj_1)
+    
+    
+    if request.method == 'POST':
+        return _extracted_from_NEWSECTION(request)
+    
+    context = {
+        'acts' : act_obj,
+        'chapter_count' : chapter_count,
+        'actId' : actId
+    }
+
+    return render(request, 'advocate/addsection.html', context)
+
+def _extracted_from_NEWSECTION(request):
+    actId = request.POST.get('act_id')
+    act_obj = actbook.objects.get(id=actId)
+    chapter_id = request.POST.get('chapter_number')
+    
+    chapter_obj = actbookchapter.objects.get(id=chapter_id)
+    section_number = request.POST.get('section_number')
+    section_title = request.POST.get('section_title_en')
+    section_title_hindi = request.POST.get('section_title_hi')
+    section_text = request.POST.get('section_text_en')
+    section_text_hindi = request.POST.get('section_text_hi')
+
+    
+    # Validate the inputs
+    if not section_number or not section_title:
+        messages.error(request, 'Section number and title are required.')
+        return redirect('newsection')
+    
+    if actbooksection.objects.filter(chapter=chapter_obj, section_number=section_number).exists():
+        messages.error(request, 'An act section with this number already exists in this chapter.')
+        return redirect('newsection')
+    if not section_text:
+        messages.error(request, 'Section text in English is required.')
+        return redirect('newsection')
+    
+    
+    if section_obj := actbooksection.objects.create(
+        chapter=chapter_obj,
+        section_number=section_number,
+        section_title=section_title,
+        section_title_hindi=section_title_hindi,
+        section_text=section_text,
+        section_text_hindi=section_text_hindi
+    ):
+        messages.success(request, 'Act section added successfully')
+    else:
+        messages.error(request, 'Failed to add act section. Please try again.')
+    # Optionally, you can redirect to a different page or render a success message
+
+    return redirect('newsection')  # Redirect to the new act page or any other page as needed

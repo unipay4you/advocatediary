@@ -11,6 +11,7 @@ from rest_framework_simplejwt import views as jwt_views
 from advocatediary import masteradmin_views
 
 from paysprint import views as PS_views
+from actbook import views as actbook_views
 
 
 
@@ -56,6 +57,9 @@ urlpatterns = [
     path('advocate/associate_client_and_add_more/', advocate_views.associate_client_and_add_more, name='associate_client_and_add_more'),
     path('advocate/offcanvas_body/', advocate_views.Offcanvas_Body, name='offcanvas_body'),
     path('advocate/client_case_viewmodal/', advocate_views.Client_Case_view_Modal, name='client_case_view_modal'),
+    path('advocate/act/add/', advocate_views.act_add_view, name='newact'),
+    path('advocate/act/add/chapter/', advocate_views.act_add_chapter, name='newchapter'),
+    path('advocate/act/add/section/', advocate_views.act_add_section, name='newsection'),
 
 
     #url for API
@@ -69,13 +73,13 @@ urlpatterns = [
     path('api/forgotpwd/', api_views.ForgatPassword.as_view()),
     path('api/otp-verify-changepwd/', api_views.verifyOTPChangepwd.as_view()),
     path('api/change-password/', api_views.ChangePassword.as_view()),
-    path('api/getdistrict/', api_views.getDistrict.as_view()),
-    path('api/getcourt/', api_views.getCourt.as_view()),
-    path('api/getcourttype/', api_views.getCourtType.as_view()),
-    path('api/getcasetype/', api_views.getCaseType.as_view()),
+    
+    
+    
+    
     path('api/user/', api_views.CaseView.as_view()),
     path('api/user/update/', api_views.UpdateUser.as_view()),
-    path('api/case/stage/', api_views.StageOfCase.as_view()),
+    
     path('api/case/history/', api_views.CaseHistoryView.as_view()),
     path('api/case/filter/', api_views.CaseViewFiltered.as_view()),
     path('api/case/add/', api_views.CaseAdd.as_view()),
@@ -87,6 +91,14 @@ urlpatterns = [
     path('api/case/dateupdate/', api_views.DateUpdateCase.as_view()),
     path('api/getcourt/update/', api_views.CourtUpdateView.as_view()),
     path('api/version/', api_views.getVersionView.as_view()),
+
+    path('api/getcasetype/', api_views.getCaseType.as_view()),
+    path('api/case/stage/', api_views.StageOfCase.as_view()),
+    path('api/getcourttype/', api_views.getCourtType.as_view()),
+    path('api/getdistrict/', api_views.getDistrict.as_view()),
+    path('api/getcourt/', api_views.getCourt.as_view()),
+
+    path('api/getall/', api_views.AddCaseApisViews.as_view()),
 
     
     
@@ -148,7 +160,15 @@ urlpatterns = [
     path('api/superadmin/reset-password/', masteradmin_views.SuperAdminResetPasswordView.as_view()), 
     path('api/superadmin/courts/', masteradmin_views.SuperAdminCourtView.as_view()),
     path('api/superadmin/courts/add/', masteradmin_views.SuperAdminCourtAddView.as_view()), 
-    
+
+
+
+    #urls for actbook
+    path('api/actbook/add/', actbook_views.Add_ActBookView.as_view(), name='actbook'),
+    path('api/actbook/', actbook_views.ActBookView.as_view(), name='actbook'),
+    path('api/actbook/chapter/', actbook_views.ActBookChapterView.as_view(), name='actbook'),
+    path('api/actbook/section/', actbook_views.ActBookSectionView.as_view(), name='actbook'),
+    path('api/actbook/similar-section/', actbook_views.SimilarSectionView.as_view(), name='similarsection'),
 
 #urls for Paysprint
     path('paysprint/api/test/', PS_views.TestView.as_view(), name='bbps_login'),

@@ -885,16 +885,13 @@ class getCourt(APIView):
 
     def post(self, request):
         try:
-            print(request.data)
+            
             district_id = request.data['district_id']
-            print(district_id)
             court_obj = Court.objects.filter(district = district_id)
-            print(court_obj)
             if not court_obj.exists():
                 return Response({'status' : 404, 'message' : 'Court not exist'})
             serializer = CourtSerializer(court_obj, many=True)
             
-            print(serializer.data)
             return Response({'status' : 200, 'payload' : serializer.data})
         
         except Exception as e:
@@ -956,4 +953,31 @@ class getVersionView(APIView):
 
 
 
-  
+class AddCaseApisViews(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            queryset = Case_Type.objects.all().order_by('case_type')
+            casetypeserializer = CaseTypeSerializer(queryset, many=True)
+
+            queryset = Case_Stage.objects.all().order_by('stage_of_case')
+            stageserializer = StageOfCaseSerializer(queryset, many=True)
+
+            queryset = Court_Type.objects.all()
+            courtypeserializer = CourtTypeSerializer(queryset, many=True)
+
+            queryset = District.objects.all()
+            districtserializer = DistrictSerializer(queryset, many=True)
+            
+            return Response({'status' : 200, 
+                             'casetype' : casetypeserializer.data, 
+                             'stage' : stageserializer.data, 
+                             'courttype' : courtypeserializer.data,
+                             'district' : districtserializer.data
+                             })
+        
+        except Exception as e:
+            print(e)
+            return Response({'status' : 404,'message' : 'Something went wrong'})

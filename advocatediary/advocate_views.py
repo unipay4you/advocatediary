@@ -627,7 +627,11 @@ def act_add_section(request):
     
     
     if request.method == 'POST':
-        return _extracted_from_NEWSECTION(request)
+        from django.db import transaction, IntegrityError
+        for i in range(1, 11):
+            _extracted_from_NEWSECTION(request, i)
+        
+        return redirect('newsection')  # Redirect to the new act page or any other page as needed
     
     context = {
         'acts' : act_obj,
@@ -637,43 +641,56 @@ def act_add_section(request):
 
     return render(request, 'advocate/addsection.html', context)
 
-def _extracted_from_NEWSECTION(request):
+def _extracted_from_NEWSECTION(request, i):
+    from django.db import transaction, IntegrityError
     actId = request.POST.get('act_id')
     act_obj = actbook.objects.get(id=actId)
     chapter_id = request.POST.get('chapter_number')
     
     chapter_obj = actbookchapter.objects.get(id=chapter_id)
     section_number = request.POST.get('section_number')
-    section_title = request.POST.get('section_title_en')
-    section_title_hindi = request.POST.get('section_title_hi')
-    section_text = request.POST.get('section_text_en')
-    section_text_hindi = request.POST.get('section_text_hi')
 
-    
+    sub_section_num = request.POST.get(f'Sub_section_number_{i}')
+    section_title = request.POST.get(f'section_title_en_{i}')
+    section_title_hindi = request.POST.get(f'section_title_hi_{i}')
+    section_text = request.POST.get(f'section_text_en_{i}')
+    section_text_hindi = request.POST.get(f'section_text_hi_{i}')
+    print(i)
+    print(f"Sub Section Number: {sub_section_num}")
+    is_validate = True
     # Validate the inputs
-    if not section_number or not section_title:
-        messages.error(request, 'Section number and title are required.')
-        return redirect('newsection')
+    if not section_number:
+        messages.error(request, 'Section number are required.')
+        is_validate = False
+        
     
-    if actbooksection.objects.filter(chapter=chapter_obj, section_number=section_number).exists():
-        messages.error(request, 'An act section with this number already exists in this chapter.')
-        return redirect('newsection')
-    if not section_text:
-        messages.error(request, 'Section text in English is required.')
-        return redirect('newsection')
+    if actbooksection.objects.filter(chapter=chapter_obj, section_number= sub_section_num).exists():
+        messages.error(request, 'An act sub section {sub_section_num} with this number already exists in this chapter.')
+        is_validate = False
     
+    if sub_section_num == '':
+        is_validate = False
     
-    if section_obj := actbooksection.objects.create(
-        chapter=chapter_obj,
-        section_number=section_number,
-        section_title=section_title,
-        section_title_hindi=section_title_hindi,
-        section_text=section_text,
-        section_text_hindi=section_text_hindi
-    ):
-        messages.success(request, 'Act section added successfully')
-    else:
-        messages.error(request, 'Failed to add act section. Please try again.')
-    # Optionally, you can redirect to a different page or render a success message
-
-    return redirect('newsection')  # Redirect to the new act page or any other page as needed
+        
+    try:
+        with transaction.atomic():
+            print(is_validate)
+            print(f"Sub Section Number: {sub_section_num}")
+            if is_validate and (sub_section_num != '' or sub_section_num is not None):
+                
+                section_number = f"{section_number}.{sub_section_num}"
+                if section_obj := actbooksection.objects.create(
+                    chapter=chapter_obj,
+                    section_number=section_number,
+                    section_title=section_title,
+                    section_title_hindi=section_title_hindi,
+                    section_text=section_text,
+                    section_text_hindi=section_text_hindi
+                ):
+                    messages.success(request, f'Act section {section_number} added successfully')
+                else:
+                    messages.error(request, f'Failed to add act section {section_number}. Please try again.')
+    except IntegrityError  as e:
+        messages.error(request, f'Error occurred while adding section {section_number}: {str(e)}')
+        is_validate = False
+    

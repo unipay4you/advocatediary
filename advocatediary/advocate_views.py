@@ -657,6 +657,9 @@ def _extracted_from_NEWSECTION(request, i):
     section_text_hindi = request.POST.get(f'section_text_hi_{i}')
     print(i)
     print(f"Sub Section Number: {sub_section_num}")
+    if sub_section_num != '0':
+        section_number = f"{section_number}({sub_section_num})"
+    
     is_validate = True
     # Validate the inputs
     if not section_number:
@@ -664,7 +667,7 @@ def _extracted_from_NEWSECTION(request, i):
         is_validate = False
         
     
-    if actbooksection.objects.filter(chapter=chapter_obj, section_number= sub_section_num).exists():
+    if actbooksection.objects.filter(chapter=chapter_obj, section_number= section_number).exists():
         messages.error(request, 'An act sub section {sub_section_num} with this number already exists in this chapter.')
         is_validate = False
     
@@ -675,10 +678,9 @@ def _extracted_from_NEWSECTION(request, i):
     try:
         with transaction.atomic():
             print(is_validate)
-            print(f"Sub Section Number: {sub_section_num}")
+            print(f"Sub Section Number: {section_number}")
             if is_validate and (sub_section_num != '' or sub_section_num is not None):
                 
-                section_number = f"{section_number}({sub_section_num})"
                 if section_obj := actbooksection.objects.create(
                     chapter=chapter_obj,
                     section_number=section_number,

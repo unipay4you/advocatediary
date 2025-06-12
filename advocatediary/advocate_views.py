@@ -678,7 +678,7 @@ def _extracted_from_NEWSECTION(request, i):
             print(f"Sub Section Number: {sub_section_num}")
             if is_validate and (sub_section_num != '' or sub_section_num is not None):
                 
-                section_number = f"{section_number}.{sub_section_num}"
+                section_number = f"{section_number}({sub_section_num})"
                 if section_obj := actbooksection.objects.create(
                     chapter=chapter_obj,
                     section_number=section_number,

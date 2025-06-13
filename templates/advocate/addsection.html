@@ -49,12 +49,17 @@
                                         
 
                                         {% endif %}
+
+                                        <h5  style="color: red;">
+                                          <span>Last Added Section of Act is <b style="color: green;">{{section}}</b></span>
+                                        </h5>
+
                                         <form method="post" enctype="multipart/form-data">
                                             {% csrf_token %}    
                                         
                                         
                                        <h5 class="card-title d-flex justify-content-between">
-                                          <span>Add New Chapter</span>
+                                          <span>Add New Section</span>
                                           
                                        </h5>
                                        <div class="row align-items-start">

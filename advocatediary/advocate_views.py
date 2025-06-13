@@ -624,6 +624,9 @@ def act_add_section(request):
     if actId:
         act_obj_1 = actbook.objects.get(id=actId)
         chapter_count = actbookchapter.objects.filter(act=act_obj_1)
+
+        section_obj = actbooksection.objects.filter(chapter__act=act_obj_1).order_by('-id').first()
+        section = section_obj.section_number if section_obj else None
     
     
     if request.method == 'POST':
@@ -636,7 +639,8 @@ def act_add_section(request):
     context = {
         'acts' : act_obj,
         'chapter_count' : chapter_count,
-        'actId' : actId
+        'actId' : actId,
+        'section' : section if 'section' in locals() else None,
     }
 
     return render(request, 'advocate/addsection.html', context)

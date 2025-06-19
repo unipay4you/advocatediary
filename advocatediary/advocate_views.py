@@ -784,3 +784,90 @@ def _extracted_from_NEWSECTION_bulk(request, i):
     except IntegrityError  as e:
         messages.error(request, f'Error occurred while adding section {section_number}: {str(e)}')
         is_validate = False
+
+
+
+@transaction.atomic
+@login_required(login_url = 'login')
+def act_add_section_bulk2(request):
+    phone_number = request.user
+    is_login_valid = check_login_validation(phone_number)
+
+    if not is_login_valid:
+        return redirect('login')
+
+
+    if is_first_login := is_first_time_login(phone_number):
+        return redirect('profile')
+    
+    act_obj = actbook.objects.all().order_by('act_name')
+    chapter_count = []
+    actId = request.GET.get('actId')
+    
+    if actId:
+        act_obj_1 = actbook.objects.get(id=actId)
+        chapter_count = actbookchapter.objects.filter(act=act_obj_1)
+
+        section_obj = actbooksection.objects.filter(chapter__act=act_obj_1).order_by('-id').first()
+        section = section_obj.section_number if section_obj else None
+    
+    
+    if request.method == 'POST':
+        from django.db import transaction, IntegrityError
+        
+        _extracted_from_NEWSECTION_bulk2(request)
+        
+        return redirect('newbulksection2')  # Redirect to the new act page or any other page as needed
+    
+    context = {
+        'acts' : act_obj,
+        'chapter_count' : chapter_count,
+        'actId' : actId,
+        'section' : section if 'section' in locals() else None,
+    }
+
+    return render(request, 'advocate/bulkaddsection2.html', context)
+
+def _extracted_from_NEWSECTION_bulk2(request):
+    from django.db import transaction, IntegrityError
+    actId = request.POST.get('act_id')
+    act_obj = actbook.objects.get(id=actId)
+    chapter_id = request.POST.get('chapter_number')
+
+    chapter_obj = actbookchapter.objects.get(id=chapter_id)
+    section_number_start = request.POST.get('section_number_start')
+    section_number_end = request.POST.get('section_number_end')
+
+    for i in range(int(section_number_start), int(section_number_end) + 1):
+        section_number = str(i)
+
+        print(f"Section Number: {section_number}")
+
+        is_validate = True
+        # Validate the inputs
+
+        if actbooksection.objects.filter(chapter=chapter_obj, section_number= section_number).exists():
+            messages.error(request, 'An act section {section_number} with this number already exists in this chapter.')
+            is_validate = False
+
+        if not section_number:
+            is_validate = False
+
+
+        try:
+            with transaction.atomic():
+                print(is_validate)
+                print(f"Sub Section Number: {section_number}")
+                if is_validate and (section_number != '' or section_number is not None):
+
+                    if section_obj := actbooksection.objects.create(
+                        chapter=chapter_obj,
+                        section_number=section_number,
+
+                    ):
+                        messages.success(request, f'Act section {section_number} added successfully')
+                    else:
+                        messages.error(request, f'Failed to add act section {section_number}. Please try again.')
+        except IntegrityError  as e:
+            messages.error(request, f'Error occurred while adding section {section_number}: {str(e)}')
+            is_validate = False

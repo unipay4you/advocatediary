@@ -61,6 +61,7 @@ urlpatterns = [
     path('advocate/act/add/chapter/', advocate_views.act_add_chapter, name='newchapter'),
     path('advocate/act/add/section/', advocate_views.act_add_section, name='newsection'),
     path('advocate/act/add/section/bulk/', advocate_views.act_add_section_bulk, name='newbulksection'),
+    path('advocate/act/add/section/bulk2/', advocate_views.act_add_section_bulk2, name='newbulksection2'),
 
 
     #url for API

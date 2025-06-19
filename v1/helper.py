@@ -231,4 +231,3 @@ def add_new_court(request):
 def save_pdf(params:dict):
     pass
 
-

@@ -60,6 +60,7 @@ urlpatterns = [
     path('advocate/act/add/', advocate_views.act_add_view, name='newact'),
     path('advocate/act/add/chapter/', advocate_views.act_add_chapter, name='newchapter'),
     path('advocate/act/add/section/', advocate_views.act_add_section, name='newsection'),
+    path('advocate/act/add/section/bulk/', advocate_views.act_add_section_bulk, name='newbulksection'),
 
 
     #url for API
@@ -164,11 +165,14 @@ urlpatterns = [
 
 
     #urls for actbook
-    path('api/actbook/add/', actbook_views.Add_ActBookView.as_view(), name='actbook'),
+    path('api/actbook/add/', actbook_views.Add_ActBookView.as_view(), name='actbookadd'),
     path('api/actbook/', actbook_views.ActBookView.as_view(), name='actbook'),
-    path('api/actbook/chapter/', actbook_views.ActBookChapterView.as_view(), name='actbook'),
-    path('api/actbook/section/', actbook_views.ActBookSectionView.as_view(), name='actbook'),
+    path('api/actbook/chapter/', actbook_views.ActBookChapterView.as_view(), name='chapter'),
+    path('api/actbook/section/', actbook_views.ActBookSectionView.as_view(), name='section'),
     path('api/actbook/similar-section/', actbook_views.SimilarSectionView.as_view(), name='similarsection'),
+
+
+
 
 #urls for Paysprint
     path('paysprint/api/test/', PS_views.TestView.as_view(), name='bbps_login'),

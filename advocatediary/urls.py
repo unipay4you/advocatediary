@@ -171,6 +171,7 @@ urlpatterns = [
     path('api/actbook/chapter/', actbook_views.ActBookChapterView.as_view(), name='chapter'),
     path('api/actbook/section/', actbook_views.ActBookSectionView.as_view(), name='section'),
     path('api/actbook/similar-section/', actbook_views.SimilarSectionView.as_view(), name='similarsection'),
+    path('api/actbook/similar-section/add/', actbook_views.SimilarSectionAddView.as_view(), name='SimilarSectionAddView'),
 
 
 

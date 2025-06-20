@@ -86,6 +86,7 @@ class ActBookSectionView(APIView):
                 section_objects = actbooksection.objects.filter(chapter__act__id=actbook_id)
             else:
                 section_objects = actbooksection.objects.filter(chapter__id=chapter_id)
+
             serializer = actbooksectionSerializer(section_objects, many=True)
             if not serializer.data:
                 return Response({'status' : 404, 'message' : 'No act book sections found'})
@@ -111,6 +112,29 @@ class SimilarSectionView(APIView):
             
             return Response({'status' : 200, 'message' : 'Similar sections retrieved successfully', 'data': serializer.data})
             
+        
+        except Exception as e:
+            print(e)
+            return Response({'status' : 404,'message' : 'Something went wrong'})
+
+class SimilarSectionAddView(APIView):
+    def post(self, request):
+        try:
+            section_id = request.data['section_id']
+            print(section_id)
+            section_obj = actbooksection.objects.get(id=section_id)
+            print(section_obj)
+            similar_section_id = request.data['similar_section_id']
+            print(similar_section_id)
+            similar_section_obj = actbooksection.objects.get(id=similar_section_id)
+            print(similar_section_obj)
+            
+            similar_section_obj = similarsection.objects.create(
+                section=section_obj,
+                similar_section=similar_section_obj
+            )
+            
+            return Response({'status' : 200, 'message' : 'Similar section added successfully'})
         
         except Exception as e:
             print(e)

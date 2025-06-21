@@ -21,6 +21,9 @@ urlpatterns = [
 
     path('base', appviews.base, name='base'),
 
+    #download urls for Apps
+    path('legaldiary/download/', api_views.downloadapp.as_view(), name='download'),
+
     #login urls
     path('login', appviews.LOGIN, name='login'),
     path('', appviews.LOGIN, name='login'),

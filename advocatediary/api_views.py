@@ -9,7 +9,7 @@ from api.serializers import *
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -21,6 +21,11 @@ from django.db.models import Max,Min,Q, Count
 from django.contrib.auth.hashers import make_password, check_password
 from reportlab.pdfgen import canvas
 from io import BytesIO
+
+
+from django.http import FileResponse, HttpResponseNotFound
+from django.conf import settings
+import os
 
 
 
@@ -981,3 +986,28 @@ class AddCaseApisViews(APIView):
         except Exception as e:
             print(e)
             return Response({'status' : 404,'message' : 'Something went wrong'})
+
+
+class downloadapp(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        try:
+            version = Andoid_app_version.objects.get(is_active=True)
+            if version and version.app_file:  # Ensure file exists
+                file_field = version.app_file  # This is a FileField or similar
+                file_path = file_field.path  # ✅ Get absolute file path
+
+                if os.path.exists(file_path):
+                    return FileResponse(
+                        open(file_path, 'rb'),
+                        as_attachment=True,
+                        filename='legaldiary.apk'
+                    )
+                else:
+                    return HttpResponseNotFound('APK file not found on server')
+            else:
+                return Response({'status': 404, 'message': 'No active version found'})
+        except Exception as e:
+            print(f"Error: {e}")
+            return Response({'status': 500, 'message': 'Something went wrong'})

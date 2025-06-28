@@ -11,6 +11,7 @@ class actbook(models.Model):
     act_image = models.ImageField(upload_to='act_images/', blank=True, null=True)
     act_pdf_hindi = models.FileField(upload_to='act_pdfs_hindi/', blank=True, null=True)
     act_image_hindi = models.ImageField(upload_to='act_images_hindi/', blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.act_name
@@ -26,6 +27,7 @@ class actbookchapter(models.Model):
     chapter_title = models.CharField(max_length=255)
     chapter_title_hindi = models.CharField(max_length=255, blank=True, null=True)
     chapter_description = models.TextField(blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.act.act_short_name} - Chapter {self.chapter_number}: {self.chapter_title}"
@@ -44,6 +46,7 @@ class actbooksection(models.Model):
     section_text = models.TextField(blank=True, null=True)
     section_text_hindi = models.TextField(blank=True, null=True)
     old_section_number = models.CharField(max_length=50, blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.chapter.act.act_name} - Chapter {self.chapter.chapter_number} - Section {self.section_number}: {self.section_title}"
@@ -57,6 +60,7 @@ class actbooksection(models.Model):
 class similarsection(models.Model):
     section = models.ForeignKey(actbooksection, related_name='similar_sections', on_delete=models.CASCADE)
     similar_section = models.ForeignKey(actbooksection, related_name='similar_to_sections', on_delete=models.CASCADE)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"Similar Section: {self.section} - {self.similar_section}"

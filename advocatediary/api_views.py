@@ -22,6 +22,8 @@ from django.contrib.auth.hashers import make_password, check_password
 from reportlab.pdfgen import canvas
 from io import BytesIO
 
+from django.core.cache import cache
+from django.apps import apps
 
 from django.http import FileResponse, HttpResponseNotFound
 from django.conf import settings
@@ -1011,3 +1013,30 @@ class downloadapp(APIView):
         except Exception as e:
             print(f"Error: {e}")
             return Response({'status': 500, 'message': 'Something went wrong'})
+
+
+class PerModelChangeStatusView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        user = request.user
+        
+        result = {}
+
+        all_models = apps.get_models()
+        for model in all_models:
+            model_name = model.__name__
+            change_flag_key = f"model_changed:{model_name}"
+            seen_flag_key = f"model_seen:{user.id}:{model_name}"
+            
+            has_changed = cache.get(change_flag_key, False)
+            has_seen = cache.get(seen_flag_key, False)
+
+            # Reset after check
+            if has_changed and not has_seen:
+                result[model_name] = True
+                cache.set(seen_flag_key, True)  # Mark as seen for this user
+            else:
+                result[model_name] = False
+
+        return Response(result)

@@ -63,8 +63,11 @@ class ActBookChapterView(APIView):
     def post(self, request):
         try:
             actbook_id = request.data['actbook_id']
+            if actbook_id == 0:
+                chapter_objects = actbookchapter.objects.all()
+            else:
+                chapter_objects = actbookchapter.objects.filter(act__id=actbook_id)
             
-            chapter_objects = actbookchapter.objects.filter(act__id=actbook_id)
             serializer = actbookchapterSerializer(chapter_objects, many=True)
             if not serializer.data:
                 return Response({'status' : 404, 'message' : 'No act book chapters found'})

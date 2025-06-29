@@ -85,7 +85,9 @@ class ActBookSectionView(APIView):
             chapter_id = request.data['chapter_id']
             actbook_id = request.data.get('actbook_id', None)
 
-            if chapter_id == 'all':
+            if actbook_id ==0:
+                section_objects = actbooksection.objects.all()
+            elif chapter_id == 'all':
                 section_objects = actbooksection.objects.filter(chapter__act__id=actbook_id)
             else:
                 section_objects = actbooksection.objects.filter(chapter__id=chapter_id)
@@ -93,10 +95,10 @@ class ActBookSectionView(APIView):
             serializer = actbooksectionSerializer(section_objects, many=True)
             if not serializer.data:
                 return Response({'status' : 404, 'message' : 'No act book sections found'})
-            
+
             return Response({'status' : 200, 'message' : 'Act book sections retrieved successfully', 'data': serializer.data})
-            
-        
+
+
         except Exception as e:
             print(e)
             return Response({'status' : 404,'message' : 'Something went wrong'})

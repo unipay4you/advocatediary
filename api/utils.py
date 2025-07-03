@@ -10,11 +10,23 @@ from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from io import BytesIO
+import requests
 
 
 
 def send_msg_to_mobile(mobile, otp, msg):
     try:
+        api_key = "e5727705-5561-11f0-a562-0200cd936042"
+        
+        url = f"https://2factor.in/API/V1/{api_key}/SMS/+91{mobile}/{otp}/OTP1"
+
+        payload={}
+        headers = {}
+
+        response = requests.request("GET", url, headers=headers, data=payload)
+
+        print(response.text)
+
         print(msg)
     except Exception as e:
         print(e)
@@ -58,8 +70,8 @@ def send_email_otp(email, email_otp, message):
         print(e)  
 
 def generate_otp():
-    #return random.randint(100000, 999999) # for production
-    return 123456 # for testing purpose
+    return random.randint(100000, 999999) # for production
+    #return 123456 # for testing purpose
 
 
 def generate_pdf(data_queryset, user):

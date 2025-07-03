@@ -16,6 +16,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.db import transaction
 import logging
+from api.utils import *
 
 
 logger = logging.getLogger(__name__)
@@ -159,18 +160,18 @@ def _extracted_from_REGISTER_4(request):
         }
     return render(request, 'register.html', context)
 
+
 # TODO Rename this here and in `REGISTER`
 def _extracted_from_REGISTER(request, phone_number, user_name, password, email):
     user_type = 'advocate'
     is_phone_number_verified = False
     is_email_verified = False
     is_first_login = True
-    otp = random.randint(100000, 999999)
-    otp = 123456 #defalt otp for testing
+    otp = generate_otp()
     user_id = generate_user_id()
-    otp_msg = ''
+    otp_msg = f'Your account verification OTP is {otp}'
+    send_msg_to_mobile(phone_number, otp, otp_msg)
     otp_created_at = datetime.datetime.now(datetime.timezone.utc)
-    otp_send_obj = send_otp_to_mobile(phone_number, otp, otp_msg)
     user_id_ref = User_ID.objects.create(user_id=user_id)
 
     user = CustomUser.objects.create(
